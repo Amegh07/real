@@ -84,7 +84,9 @@ export default function AgentModal({ agentId, onClose }) {
                   </span>
                   <span className="badge badge-cyan">💼 {agent.job || 'Unemployed'}</span>
                   <span className="badge badge-green">💰 ${agent.money.toLocaleString()}</span>
-                  <span className="badge badge-blue">🕰️ Age {agent.age_ticks}</span>
+                  <span className={`badge ${agent.is_dead ? 'badge-red' : 'badge-blue'}`}>
+                    {agent.is_dead ? '💀 Deceased' : `🕰️ Age ${Math.floor(agent.age_years)}`}
+                  </span>
                 </div>
               </div>
             </div>

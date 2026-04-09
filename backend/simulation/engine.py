@@ -11,6 +11,7 @@ from collections import deque
 from typing import Optional
 
 from simulation.world_state import WorldState
+from simulation.game_master import AIGameMaster
 from agents.agent_manager import AgentManager
 from decisions.decision_engine import DecisionEngine
 from events.event_bus import EventBus
@@ -44,10 +45,14 @@ class SimulationEngine:
         self.agent_manager = AgentManager(config, self.world_state, self.event_bus, self.groq_client)
         self.decision_engine = DecisionEngine(config, self.event_bus, self.groq_client)
 
-        # Economy history for charts (last 200 ticks)
+        # Economy and UI state
         self.economy_history: deque = deque(maxlen=200)
 
-        logger.info("SimulationEngine initialized (Phase 4).")
+        # Phase 8: AI Task Queue + Game Master
+        self.ai_task_queue: deque = deque()
+        self.game_master = AIGameMaster(self.groq_client, self.world_state, self.event_bus)
+
+        logger.info("SimulationEngine initialized (Phase 8).")
 
     def setup(self):
         """Populate the world with initial agents and assign starting jobs."""
@@ -77,9 +82,13 @@ class SimulationEngine:
 
         agents = self.agent_manager.get_all_agents()
 
-        # 1. Decay needs
+        # 1. Decay needs for all agents
         for agent in agents:
             agent.decay_needs(self.tick_number)
+
+        # 1b. Prune dead agents (starvation/old age)
+        self.agent_manager.prune_dead_agents(self.tick_number)
+        agents = self.agent_manager.get_all_agents()  # refresh after deaths
 
         # 2. Decide actions (economy-aware in Phase 2)
         for agent in agents:
@@ -97,6 +106,11 @@ class SimulationEngine:
         if self.tick_number > 1 and (self.tick_number - 1) % self.config.get("ticks_per_day", 10) == 0:
             self._run_nightly_reflections()
 
+        # Phase 9: Human Lifecycle — marriage & births (run every 5 ticks for performance)
+        if self.tick_number % 5 == 0:
+            self.agent_manager.run_marriage_checks(self.tick_number)
+            self.agent_manager.run_birth_checks(self.tick_number)
+
         # 5. Flush events
         self.event_bus.flush(self.tick_number)
 
@@ -108,6 +122,19 @@ class SimulationEngine:
             "employed": self.economy._employment_count(),
             "population": len(agents),
         })
+
+        # 7. Process AI Queue (1 request every 3 ticks ~ 25 RPM at 1.2s tick delay)
+        if self.tick_number % 3 == 0 and self.ai_task_queue:
+            task = self.ai_task_queue.popleft()
+            self._process_ai_task(task)
+
+        # 8. Game Master: check for world events (queued so they respect rate limits)
+        if self.game_master.should_trigger(self.tick_number):
+            self.ai_task_queue.append({
+                "type": "world_event",
+                "tick": self.tick_number,
+                "agents": [a.id for a in agents],
+            })
 
     def run(self):
         """Start the main simulation loop."""
@@ -134,27 +161,41 @@ class SimulationEngine:
             self._print_final_summary()
 
     def _run_nightly_reflections(self):
-        """Phase 5: Agents reflect on their memories and formulate goals."""
+        """Phase 5/8: Agents queue up for reflection instead of blocking all at once."""
         agents = self.agent_manager.get_all_agents()
         import random
-        # To minimize LLM API calls, arbitrarily pick only 1 agent to reflect per night, and only ~25% of nights
-        if not agents or random.random() > 0.25:
+        # Pick 2 random agents per night to queue up for reflection (smoothly processed later)
+        if not agents:
             return
         
-        agent = random.choice(agents)
-        logger.info(f"--- Nightly Reflection (Day {self.world_state.day}) ---")
+        reflectors = random.sample(agents, min(2, len(agents)))
+        for agent in reflectors:
+            self.ai_task_queue.append({"type": "reflection", "agent_id": agent.id})
+
+    def _process_ai_task(self, task: dict):
+        """Consume a queued AI task synchronously."""
+        from agents.agent import Agent
         
-        # We pass a brief summary of their current physical/financial state
-        current_state = {
-            "hunger": round(agent.hunger),
-            "energy": round(agent.energy),
-            "happiness": round(agent.happiness),
-            "money": round(agent.money),
-            "job": agent.job
-        }
-        new_goal = agent.memory.generate_reflection(self.groq_client, current_state)
-        if new_goal:
-            agent.goal = new_goal
+        if task["type"] == "reflection":
+            agent = self.agent_manager.get_agent(task["agent_id"])
+            if not agent: return
+            
+            logger.info(f"[AI Queue] Processing reflection for {agent.name}")
+            current_state = {
+                "hunger": round(agent.hunger),
+                "energy": round(agent.energy),
+                "happiness": round(agent.happiness),
+                "money": round(agent.money),
+                "job": agent.job
+            }
+            new_goal = agent.memory.generate_reflection(self.groq_client, current_state)
+            if new_goal:
+                agent.goal = new_goal
+
+        elif task["type"] == "world_event":
+            logger.info("[AI Queue] Processing Global Game Master event.")
+            agents = self.agent_manager.get_all_agents()
+            self.game_master.generate_and_apply_event(task["tick"], agents, self.economy)
 
     # ─────────────────────────────────────────────────────────
     # Console Output

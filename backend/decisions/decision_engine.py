@@ -16,7 +16,7 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-ACTIONS = ["eat", "work", "sleep", "socialize", "idle", "seek_job", "spend_luxury"]
+ACTIONS = ["eat", "work", "sleep", "socialize", "idle", "seek_job", "spend_luxury", "visit_doctor"]
 
 
 class DecisionEngine:
@@ -38,17 +38,28 @@ class DecisionEngine:
         """
         Return the best action for this agent this tick.
         Decision hierarchy:
-          1. Emergency overrides (starving, collapsing)
-          2. Phase 4 Groq escalation for complex state
-          3. Rule-based scoring
+          1. Children → restricted to eat/sleep/idle
+          2. Emergency overrides (starving, collapsing)
+          3. Phase 4 Groq escalation for complex state
+          4. Rule-based scoring
         """
+        # --- Children only do basic things ---
+        if not agent.is_adult:
+            if agent.hunger < 30:
+                return "eat"
+            if agent.energy < 20:
+                return "sleep"
+            return "idle"
+
         # --- Hard overrides ---
         if agent.hunger < 10:
             return "eat"
+        if getattr(agent, "is_sick", False) and getattr(agent, "illness_severity", 0) > 30 and agent.money >= 30:
+            return "visit_doctor"
         if agent.energy < 8:
             return "sleep"
 
-        # Unemployed agents should seek a job first
+        # Unemployed adults should seek a job first
         if agent.job is None and agent.energy > 30:
             return "seek_job"
 
@@ -117,6 +128,12 @@ class DecisionEngine:
             scores["socialize"] -= 30
         if agent.energy < 25:
             scores["socialize"] -= 20
+        # Single adults have a social drive to meet potential partners
+        if not agent.is_married and agent.is_adult:
+            scores["socialize"] += 10
+        # Married agents socialise less urgently (they're content)
+        if agent.is_married:
+            scores["socialize"] -= 5
 
         # ── SEEK JOB ─────────────────────────────────────────
         if agent.job is None:
@@ -137,6 +154,16 @@ class DecisionEngine:
         # ── IDLE ─────────────────────────────────────────────
         scores["idle"] = 4.0
 
+        # ── VISIT DOCTOR ──────────────────────────────────────
+        if getattr(agent, "is_sick", False):
+            # Only go to doctor if you can afford it, or severity is very high and you risk it anyway
+            if agent.money >= 30:
+                scores["visit_doctor"] = 20 + getattr(agent, "illness_severity", 0) * 1.5
+            else:
+                scores["visit_doctor"] = getattr(agent, "illness_severity", 0) * 0.5
+        else:
+            scores["visit_doctor"] = 0.0
+
         return {action: max(0.0, s) for action, s in scores.items()}
 
     # ─────────────────────────────────────────────────────────
@@ -154,15 +181,15 @@ class DecisionEngine:
             return False
             
         # Example condition 1: Very unhappy but wealthy (mid-life crisis)
-        if agent.happiness < 40 and agent.money > 200 and random.random() < 0.05:
+        if agent.happiness < 40 and agent.money > 200 and random.random() < 0.02:
             return True
             
         # Example condition 2: High number of rivals, creating social tension
-        if agent.rival_count > 1 and random.random() < 0.02:
+        if agent.rival_count > 1 and random.random() < 0.01:
             return True
 
         # Example condition 3: Starving but has no money 
-        if agent.hunger < 30 and agent.money < world_state.food_cost and random.random() < 0.05:
+        if agent.hunger < 30 and agent.money < world_state.food_cost and random.random() < 0.02:
             return True
 
         return False
@@ -171,40 +198,25 @@ class DecisionEngine:
         """
         Builds a context-rich prompt and asks Groq to choose an action.
         """
-        prompt = f"""
-Agent Profile:
-Name: {agent.name}
-Personality Archetype: {agent.personality}
+        prompt = f"""Agent Profile:
+Name: {agent.name} | Gender: {agent.gender} | Age: {agent.age_years:.0f} years
+Personality: {agent.personality} | Married: {agent.is_married}
 Traits: {agent.traits}
-Current State: 
-- Hunger: {agent.hunger:.0f}/100
-- Energy: {agent.energy:.0f}/100
-- Happiness: {agent.happiness:.0f}/100
-- Money: ${agent.money:.0f}
-Job: {agent.job or 'Unemployed'}
-Social: {agent.friend_count} friends, {agent.rival_count} rivals.
-Current Goal: {agent.goal}
+State: Hunger={agent.hunger:.0f}/100, Energy={agent.energy:.0f}/100, Happiness={agent.happiness:.0f}/100, Money=${agent.money:.0f}
+Job: {agent.job or 'Unemployed'} | Friends: {agent.friend_count} | Rivals: {agent.rival_count}
+Goal: {agent.goal}
 
-Agent's Memory Context:
+Memory:
 {agent.memory.build_context_string(n_recent=4, n_significant=3)}
 
-World State: 
-- Time: {world_state.time_of_day}
-- Weather: {world_state.weather}
-- Food Cost: ${world_state.food_cost:.2f}
+World: Time={world_state.time_of_day}, Weather={world_state.weather}, Food=${world_state.food_cost:.2f}
 
-Valid Options: {ACTIONS}
-
-Based on the agent's complex current state, personality traits, and memories, choose the ONE best action from the Valid Options list above.
-
-Think about what a real person with these traits and memories would do in this exact situation.
-Then, provide your answer strictly in the following JSON format:
-
+Valid Actions: {ACTIONS}
+Choose the ONE best action for this agent right now. Respond only in JSON:
 {{
-  "reasoning": "brief 1-sentence explanation of why the action was chosen",
+  "reasoning": "brief 1-sentence why",
   "action": "exact_action_string"
-}}
-"""
+}}"""
         response_text = self.groq_client.complete(prompt)
         
         try:

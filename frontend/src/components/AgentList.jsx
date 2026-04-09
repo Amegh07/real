@@ -119,7 +119,7 @@ export default function AgentList({ agents, onSelect }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.73rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.7rem' }}>
               <span>💖 {agent.friend_count} Friends</span>
               <span>⚔️ {agent.rival_count} Rivals</span>
-              <span>🕰️ Age {agent.age_ticks}</span>
+              <span>{agent.is_dead ? '💀 Dead' : `🕰️ Age ${Math.floor(agent.age_years)}`}</span>
             </div>
           </div>
         );

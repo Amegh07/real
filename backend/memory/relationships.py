@@ -112,6 +112,34 @@ class RelationshipGraph:
 
         return change, change
 
+    def update_bond(self, source_id: str, target_id: str, target_name: str, delta: float):
+        """
+        Directly update the bond score between two agents by a delta amount.
+        Creates the relationship entry if it doesn't exist.
+        Emits friendship/rivalry milestone events automatically.
+        """
+        if source_id not in self._graph:
+            self._graph[source_id] = {}
+        if target_id not in self._graph[source_id]:
+            self._graph[source_id][target_id] = Relationship(
+                target_id=target_id,
+                target_name=target_name,
+                bond=random.uniform(-5, 5),
+            )
+        rel = self._graph[source_id][target_id]
+        prev_status = rel.status
+        if delta > 0:
+            rel.strengthen(delta)
+        else:
+            rel.weaken(-delta)
+
+        new_status = rel.status
+        if prev_status != new_status:
+            if new_status == "friend":
+                self.event_bus.emit(f"{target_name} and someone have become friends!")
+            elif new_status == "rival":
+                self.event_bus.emit(f"{target_name} and someone have become rivals.")
+
     def _compatibility(self, p1: str, p2: str) -> float:
         """
         Returns a modifier (0.5 – 1.5) based on personality pair.
@@ -161,3 +189,11 @@ class RelationshipGraph:
             }
             for r in self.get_all_relationships(agent_id)
         ]
+
+    def remove_agent(self, agent_id: str):
+        """Fully remove an agent from the relationship graph when they die."""
+        # Remove their own entry
+        self._graph.pop(agent_id, None)
+        # Remove references to them from all other agents
+        for other_id in list(self._graph.keys()):
+            self._graph[other_id].pop(agent_id, None)

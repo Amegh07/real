@@ -11,7 +11,7 @@ SIMULATION_CONFIG = {
     "ticks_per_day": 10,
 
     # ── Agents ──────────────────────────────────────────────
-    "initial_agents": 55,
+    "initial_agents": 100,
 
     # ── Economy ─────────────────────────────────────────────
     "starting_treasury": 150_000.0,

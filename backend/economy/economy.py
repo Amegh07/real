@@ -23,40 +23,103 @@ logger = get_logger(__name__)
 # Each job has: wage, energy_cost, happiness_bonus, required_personality (optional)
 # ─────────────────────────────────────────────────────────────
 JOB_REGISTRY: Dict[str, dict] = {
+
+    # ── Agriculture ──────────────────────────────────────────
     "Farmer": {
-        "wage": 18.0,
-        "energy_cost": 8.0,
-        "happiness_bonus": 5.0,
-        "slots": 3,
-        "description": "Grows food for the community",
+        "wage": 16.0, "energy_cost": 10.0, "happiness_bonus": 6.0,
+        "slots": 18, "description": "Grows crops and tends livestock.",
     },
+    "Fisherman": {
+        "wage": 18.0, "energy_cost": 9.0, "happiness_bonus": 8.0,
+        "slots": 10, "description": "Catches fish at the river and lake.",
+    },
+    "Shepherd": {
+        "wage": 14.0, "energy_cost": 7.0, "happiness_bonus": 10.0,
+        "slots": 8, "description": "Herds sheep and goats in the meadows.",
+    },
+
+    # ── Trades & Crafts ──────────────────────────────────────
+    "Blacksmith": {
+        "wage": 28.0, "energy_cost": 14.0, "happiness_bonus": 5.0,
+        "slots": 6, "description": "Forges tools, weapons and horseshoes.",
+    },
+    "Carpenter": {
+        "wage": 24.0, "energy_cost": 12.0, "happiness_bonus": 7.0,
+        "slots": 8, "description": "Builds furniture, homes, and carts.",
+    },
+    "Tailor": {
+        "wage": 22.0, "energy_cost": 5.0, "happiness_bonus": 12.0,
+        "slots": 6, "description": "Sews clothing and mends garments.",
+    },
+    "Baker": {
+        "wage": 20.0, "energy_cost": 8.0, "happiness_bonus": 14.0,
+        "slots": 8, "description": "Bakes bread and pastries for the town.",
+    },
+    "Brewer": {
+        "wage": 22.0, "energy_cost": 7.0, "happiness_bonus": 16.0,
+        "slots": 6, "description": "Crafts ale and mead for the tavern.",
+    },
+    "Stonemason": {
+        "wage": 26.0, "energy_cost": 15.0, "happiness_bonus": 4.0,
+        "slots": 6, "description": "Cuts stone and builds walls and roads.",
+    },
+
+    # ── Commerce & Services ──────────────────────────────────
     "Merchant": {
-        "wage": 30.0,
-        "energy_cost": 5.0,
-        "happiness_bonus": 8.0,
-        "slots": 2,
-        "description": "Buys and sells goods",
+        "wage": 34.0, "energy_cost": 5.0, "happiness_bonus": 10.0,
+        "slots": 8, "description": "Buys and sells goods at market.",
     },
-    "Guard": {
-        "wage": 22.0,
-        "energy_cost": 10.0,
-        "happiness_bonus": 3.0,
-        "slots": 2,
-        "description": "Keeps citizens safe",
+    "Innkeeper": {
+        "wage": 26.0, "energy_cost": 8.0, "happiness_bonus": 18.0,
+        "slots": 6, "description": "Runs the local inn and tavern.",
+    },
+    "Stable Hand": {
+        "wage": 15.0, "energy_cost": 9.0, "happiness_bonus": 9.0,
+        "slots": 6, "description": "Cares for horses and livestock at the stables.",
+    },
+
+    # ── Knowledge & Healing ──────────────────────────────────
+    "Healer": {
+        "wage": 30.0, "energy_cost": 6.0, "happiness_bonus": 18.0,
+        "slots": 6, "description": "Treats the sick and injured with herbs and knowledge.",
     },
     "Teacher": {
-        "wage": 20.0,
-        "energy_cost": 4.0,
-        "happiness_bonus": 12.0,
-        "slots": 1,
-        "description": "Educates the community",
+        "wage": 24.0, "energy_cost": 4.0, "happiness_bonus": 15.0,
+        "slots": 6, "description": "Educates children and adults.",
     },
+    "Scholar": {
+        "wage": 26.0, "energy_cost": 3.0, "happiness_bonus": 16.0,
+        "slots": 4, "description": "Studies the stars, history, and natural philosophy.",
+    },
+
+    # ── Governance & Security ────────────────────────────────
+    "Guard": {
+        "wage": 24.0, "energy_cost": 11.0, "happiness_bonus": 4.0,
+        "slots": 10, "description": "Keeps the peace and defends the town gates.",
+    },
+    "Tax Collector": {
+        "wage": 35.0, "energy_cost": 4.0, "happiness_bonus": -5.0,
+        "slots": 4, "description": "Collects dues for the treasury. Not popular.",
+    },
+    "Constable": {
+        "wage": 30.0, "energy_cost": 8.0, "happiness_bonus": 6.0,
+        "slots": 4, "description": "Investigates crimes and enforces the law.",
+    },
+
+    # ── Arts & Entertainment ─────────────────────────────────
+    "Bard": {
+        "wage": 18.0, "energy_cost": 4.0, "happiness_bonus": 25.0,
+        "slots": 6, "description": "Performs music and stories at the inn.",
+    },
+    "Artist": {
+        "wage": 15.0, "energy_cost": 3.0, "happiness_bonus": 22.0,
+        "slots": 4, "description": "Paints portraits and murals for the wealthy.",
+    },
+
+    # ── Fallback ─────────────────────────────────────────────
     "Laborer": {
-        "wage": 14.0,
-        "energy_cost": 12.0,
-        "happiness_bonus": 1.0,
-        "slots": 999,  # Unlimited — fallback job
-        "description": "General manual work",
+        "wage": 12.0, "energy_cost": 13.0, "happiness_bonus": 0.0,
+        "slots": 999, "description": "Performs general unskilled manual work.",
     },
 }
 
@@ -144,12 +207,12 @@ class Economy:
     def _preferred_jobs(self, personality: str) -> List[str]:
         """Map personality types to preferred job types."""
         mapping = {
-            "industrious": ["Farmer", "Guard", "Laborer"],
-            "social": ["Teacher", "Merchant"],
-            "reclusive": ["Farmer", "Laborer"],
-            "reckless": ["Guard", "Laborer"],
-            "cautious": ["Teacher", "Merchant"],
-            "lazy": ["Merchant", "Teacher"],
+            "industrious": ["Blacksmith", "Carpenter", "Stonemason", "Farmer", "Guard", "Laborer"],
+            "social":      ["Innkeeper", "Bard", "Teacher", "Merchant", "Baker", "Brewer"],
+            "reclusive":   ["Scholar", "Shepherd", "Fisherman", "Artist", "Farmer"],
+            "reckless":    ["Guard", "Constable", "Blacksmith", "Fisherman", "Laborer"],
+            "cautious":    ["Tax Collector", "Teacher", "Healer", "Scholar", "Tailor"],
+            "lazy":        ["Bard", "Artist", "Tailor", "Shepherd", "Stable Hand"],
         }
         return mapping.get(personality, ["Laborer"])
 
@@ -160,22 +223,30 @@ class Economy:
     def pay_wage(self, agent) -> float:
         """
         Pay an agent for working this tick.
-        Wage depends on their assigned job (or base wage if unassigned).
+        Phase 8: Wages are multiplied by the agent's skill level in that job.
+        A brand-new worker gets base wage. An experienced worker gets up to 3x.
         """
         if not agent.job:
-            # Auto-assign if not employed
             self.assign_job(agent)
 
         job_name = agent.job or "Laborer"
-        wage = JOB_REGISTRY.get(job_name, JOB_REGISTRY["Laborer"])["wage"]
-        wage *= self.inflation_rate  # Wages grow with inflation
+        base_wage = JOB_REGISTRY.get(job_name, JOB_REGISTRY["Laborer"])["wage"]
+
+        # Skill multiplier: skill starts at 0.0, each work tick grows it
+        skill_level = agent.skills.get(job_name, 0.0)
+        skill_multiplier = 1.0 + min(skill_level / 50.0, 2.0)  # caps at 3x at skill 100
+
+        wage = base_wage * self.inflation_rate * skill_multiplier
+
+        # Grow the skill slightly each time agent works
+        agent.skills[job_name] = min(100.0, agent.skills.get(job_name, 0.0) + 0.2)
 
         if self.treasury >= wage:
             self.treasury -= wage
             self.total_wages_paid += wage
             self.tick_wages += wage
             agent.income_per_tick = wage
-            return wage
+            return round(wage, 2)
 
         # Treasury empty — pay partial
         partial = max(0.0, self.treasury)
