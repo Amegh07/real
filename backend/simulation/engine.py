@@ -7,6 +7,7 @@ Treasury now refills via Economy instead of WorldState.
 """
 
 import time
+from collections import deque
 from typing import Optional
 
 from simulation.world_state import WorldState
@@ -39,9 +40,12 @@ class SimulationEngine:
         self.economy = Economy(config, self.event_bus)
         self.world_state.inject_economy(self.economy)           # Wire economy in
 
-        self.agent_manager = AgentManager(config, self.world_state, self.event_bus)
-        self.groq_client = GroqClient(config)
+        self.groq_client = GroqClient(config)                  # Must come before AgentManager
+        self.agent_manager = AgentManager(config, self.world_state, self.event_bus, self.groq_client)
         self.decision_engine = DecisionEngine(config, self.event_bus, self.groq_client)
+
+        # Economy history for charts (last 200 ticks)
+        self.economy_history: deque = deque(maxlen=200)
 
         logger.info("SimulationEngine initialized (Phase 4).")
 
@@ -95,6 +99,15 @@ class SimulationEngine:
 
         # 5. Flush events
         self.event_bus.flush(self.tick_number)
+
+        # 6. Record economy history for chart API
+        self.economy_history.append({
+            "tick": self.tick_number,
+            "treasury": round(self.economy.treasury, 2),
+            "inflation": round(self.economy.inflation_rate, 4),
+            "employed": self.economy._employment_count(),
+            "population": len(agents),
+        })
 
     def run(self):
         """Start the main simulation loop."""

@@ -9,7 +9,7 @@ In Phase 4, Groq will be used for relationship conversations and conflict resolu
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 from utils.logger import get_logger
 import random
 
@@ -147,7 +147,7 @@ class RelationshipGraph:
     def get_all_relationships(self, agent_id: str) -> List[Relationship]:
         return list(self._graph.get(agent_id, {}).values())
 
-    def get_best_friend(self, agent_id: str) -> object | None:
+    def get_best_friend(self, agent_id: str) -> Optional[Relationship]:
         rels = self.get_friends(agent_id)
         return max(rels, key=lambda r: r.bond) if rels else None
 

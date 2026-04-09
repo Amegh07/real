@@ -17,7 +17,10 @@ logger = get_logger(__name__)
 FIRST_NAMES = [
     "Aria", "Blaze", "Cora", "Dex", "Ember", "Flynn", "Grace", "Halo",
     "Ivan", "Jade", "Knox", "Luna", "Mace", "Nova", "Oslo", "Priya",
-    "Quinn", "Rex", "Sage", "Tara", "Uma", "Vex", "Wren", "Xen", "Yuki", "Zane"
+    "Quinn", "Rex", "Sage", "Tara", "Uma", "Vex", "Wren", "Xen", "Yuki", "Zane",
+    "Leo", "Mia", "Niko", "Orion", "Pax", "Quincy", "Rowan", "Silas", "Talia", "Una",
+    "Vera", "Wyatt", "Xander", "Yara", "Zion", "Axel", "Bria", "Cleo", "Dane", "Ezra",
+    "Faye", "Gael", "Hope", "Ira", "Jace", "Kira", "Leon", "Mila", "Nash", "Opal"
 ]
 
 
@@ -117,31 +120,31 @@ class AgentManager:
         elif action == "socialize":
             # Pick a random other agent to socialize with
             others = [a for a in self.get_all_agents() if a.id != agent.id]
-            if others:
-                partner = random.choice(others)
-                change, _ = self.rel_graph.interact(agent, partner, tick, "social")
-                agent.apply_action_effect("socialize", self.world_state)
-                partner.happiness = min(100.0, partner.happiness + 5.0)
-                
-                # --- Phase 4: Groq Conversation ---
-                convo_snippet = ""
-                if self.groq_client and self.groq_client.enabled and random.random() < 0.02:
-                    convo_snippet = self._generate_conversation(agent, partner)
-                
-                log_msg = f"Spent time with {partner.name}." if not convo_snippet else f"Chatted with {partner.name}: \"{convo_snippet}\""
-                
-                agent.memory.record(
-                    tick, log_msg,
-                    importance=4, emotion="happy" if change > 0 else "neutral"
-                )
-                if convo_snippet:
-                    self.event_bus.emit(f"🗣️ {agent.name} -> {partner.name}: \"{convo_snippet}\"")
-                
-                # Update friend/rival counts
-                self._refresh_social_counts(agent)
-                self._refresh_social_counts(partner)
-            else:
+            if not others:
                 agent.apply_action_effect("idle", self.world_state)
+                return
+            partner = random.choice(others)
+            change, _ = self.rel_graph.interact(agent, partner, tick, "social")
+            agent.apply_action_effect("socialize", self.world_state)
+            partner.happiness = min(100.0, partner.happiness + 5.0)
+
+            # --- Phase 4: Groq Conversation ---
+            convo_snippet = ""
+            if self.groq_client and self.groq_client.enabled and random.random() < 0.02:
+                convo_snippet = self._generate_conversation(agent, partner)
+
+            log_msg = f"Spent time with {partner.name}." if not convo_snippet else f"Chatted with {partner.name}: \"{convo_snippet}\""
+
+            agent.memory.record(
+                tick, log_msg,
+                importance=4, emotion="happy" if change > 0 else "neutral"
+            )
+            if convo_snippet:
+                self.event_bus.emit(f"🗣️ {agent.name} -> {partner.name}: \"{convo_snippet}\"")
+
+            # Update friend/rival counts
+            self._refresh_social_counts(agent)
+            self._refresh_social_counts(partner)
 
         else:
             # Standard stat-driven actions

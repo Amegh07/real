@@ -1,67 +1,129 @@
 import React from 'react';
 
-const ProgressBar = ({ label, value, color }) => (
-  <div style={{ marginBottom: '0.5rem' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.2rem', color: 'var(--text-muted)' }}>
-      <span>{label}</span>
-      <span>{value.toFixed(0)}/100</span>
-    </div>
-    <div style={{ height: '6px', background: 'rgba(0,0,0,0.3)', borderRadius: '3px', overflow: 'hidden' }}>
-      <div style={{ width: `${value}%`, height: '100%', background: color, transition: 'width 0.3s ease' }} />
-    </div>
+const PERSONALITY_COLORS = {
+  industrious: 'var(--accent-blue)',
+  lazy:        'var(--accent-yellow)',
+  social:      'var(--accent-purple)',
+  reclusive:   'var(--accent-cyan)',
+  reckless:    'var(--accent-red)',
+  cautious:    'var(--accent-green)',
+};
+
+const PERSONALITY_ICONS = {
+  industrious: '⚙️', lazy: '😴', social: '🤝',
+  reclusive: '🔮', reckless: '⚡', cautious: '🛡️',
+};
+
+const Bar = ({ value, color }) => (
+  <div className="progress-track" style={{ flex: 1 }}>
+    <div
+      className="progress-fill"
+      style={{
+        width: `${Math.max(0, Math.min(100, value))}%`,
+        background: value < 20
+          ? 'var(--accent-red)'
+          : value < 45
+          ? 'var(--accent-yellow)'
+          : color,
+      }}
+    />
   </div>
 );
 
-export default function AgentList({ agents }) {
-  if (!agents || agents.length === 0) return <div className="glass-panel" style={{ padding: '2rem' }}>Loading agents...</div>;
+export default function AgentList({ agents, onSelect }) {
+  if (!agents || agents.length === 0) {
+    return (
+      <div className="glass" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        Loading agents…
+      </div>
+    );
+  }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.2rem' }}>
-      {agents.map(agent => (
-        <div key={agent.id} className="glass-panel" style={{ padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-          
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <h3 style={{ margin: 0, textTransform: 'none', color: 'var(--text-main)', fontSize: '1.2rem' }}>{agent.name}</h3>
-              <div style={{ fontSize: '0.8rem', color: 'var(--accent-purple)' }}>{agent.personality.toUpperCase()}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ color: 'var(--accent-green)', fontWeight: 'bold', fontSize: '1.1rem' }}>${agent.money.toFixed(0)}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>
-                {agent.job || "Unemployed"}
+    <div className="agent-grid">
+      {agents.map(agent => {
+        const isCritical = agent.hunger < 15 || agent.energy < 15 || agent.happiness < 15;
+        const pColor = PERSONALITY_COLORS[agent.personality] || 'var(--accent-blue)';
+
+        return (
+          <div
+            key={agent.id}
+            className={`glass glass-clickable fade-in-up ${isCritical ? 'pulse-critical' : ''}`}
+            onClick={() => onSelect && onSelect(agent)}
+            style={{
+              padding: '1.2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.9rem',
+              borderLeft: `3px solid ${pColor}`,
+            }}
+          >
+            {/* Header row */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.05rem' }}>{PERSONALITY_ICONS[agent.personality] ?? '👤'}</span>
+                  <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-main)' }}>{agent.name}</span>
+                  {isCritical && <span className="badge badge-red" style={{ padding: '1px 6px', fontSize: '0.65rem' }}>CRISIS</span>}
+                </div>
+                <div style={{ marginTop: '3px' }}>
+                  <span className="badge" style={{ background: `${pColor}22`, color: pColor, border: `1px solid ${pColor}44`, fontSize: '0.65rem' }}>
+                    {agent.personality}
+                  </span>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ color: 'var(--accent-green)', fontWeight: 700, fontSize: '1.1rem' }}>
+                  ${agent.money?.toFixed(0)}
+                </div>
+                <div style={{ marginTop: '3px' }}>
+                  <span className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>
+                    {agent.job || 'Unemployed'}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Goal & Action */}
-          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.6rem', borderRadius: '8px', fontSize: '0.85rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-              <strong style={{ color: 'var(--text-muted)' }}>Goal:</strong>
-              <span style={{ color: 'var(--accent-blue)', textAlign: 'right', wordBreak: 'break-word', maxWidth: '70%' }}>"{agent.goal}"</span>
+            {/* Goal & action */}
+            <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 8, padding: '0.55rem 0.75rem', fontSize: '0.8rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem', gap: '0.5rem' }}>
+                <span style={{ color: 'var(--text-muted)', flexShrink: 0 }}>Goal:</span>
+                <span style={{ color: 'var(--accent-blue)', textAlign: 'right', wordBreak: 'break-word' }}>"{agent.goal}"</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Doing:</span>
+                <span style={{ textTransform: 'capitalize', color: 'var(--text-main)' }}>
+                  {agent.current_action?.replace(/_/g, ' ') ?? '—'}
+                </span>
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <strong style={{ color: 'var(--text-muted)' }}>Doing:</strong>
-              <span style={{ textTransform: 'capitalize' }}>{agent.current_action.replace('_', ' ')}</span>
+
+            {/* Need bars */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {[
+                { label: 'Hunger', value: agent.hunger, color: '#f87171' },
+                { label: 'Energy', value: agent.energy, color: 'var(--accent-blue)' },
+                { label: 'Happy',  value: agent.happiness, color: 'var(--accent-green)' },
+              ].map(({ label, value, color }) => (
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', width: 42, flexShrink: 0 }}>{label}</span>
+                  <Bar value={value} color={color} />
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', width: 26, textAlign: 'right', flexShrink: 0 }}>
+                    {Math.round(value)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Social footer */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.73rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.7rem' }}>
+              <span>💖 {agent.friend_count} Friends</span>
+              <span>⚔️ {agent.rival_count} Rivals</span>
+              <span>🕰️ Age {agent.age_ticks}</span>
             </div>
           </div>
-
-          {/* Needs */}
-          <div style={{ marginTop: '0.5rem' }}>
-            <ProgressBar label="Hunger" value={agent.hunger} color="var(--accent-red)" />
-            <ProgressBar label="Energy" value={agent.energy} color="var(--accent-blue)" />
-            <ProgressBar label="Happiness" value={agent.happiness} color="var(--accent-green)" />
-          </div>
-
-          {/* Social */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.8rem', marginTop: 'auto' }}>
-            <span style={{ color: 'var(--text-muted)' }}>💖 {agent.friend_count} Friends</span>
-            <span style={{ color: 'var(--text-muted)' }}>⚔️ {agent.rival_count} Rivals</span>
-            <span style={{ color: 'var(--text-muted)' }}>🕰️ Age: {agent.age_ticks}</span>
-          </div>
-          
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
