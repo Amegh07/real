@@ -33,7 +33,7 @@ PERSONALITY_TRAITS: Dict[str, Dict[str, float]] = {
 }
 
 # ── Age constants ────────────────────────────────────────────
-TICKS_PER_SIM_YEAR = 100  # 100 ticks = 1 simulation year
+TICKS_PER_SIM_YEAR = 5    # Time-Dilation applied! 5 ticks = 1 simulation year
 ADULT_AGE_YEARS    = 18   # Become adult at 18 years
 FERTILE_AGE_MAX    = 45   # Women can have children up to 45 years
 OLD_AGE_START      = 65   # Death probability begins
