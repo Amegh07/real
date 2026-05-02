@@ -1,0 +1,6735 @@
+[
+  {
+    "feature_id": "bio.stress_load",
+    "feature_name": "Stress Load",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Physiological depletion and social pressure accumulate into a generalized stress burden.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from hunger deficit, fatigue, illness burden, and morale loss.",
+    "upstream_causes": [
+      "hunger deficit",
+      "sleep loss",
+      "illness burden",
+      "social conflict"
+    ],
+    "downstream_effects": [
+      "distress",
+      "decision clarity",
+      "illness vulnerability"
+    ],
+    "interaction_rules": [
+      "stress_load rises with unmet needs and low support",
+      "high resilience dampens stress amplification",
+      "illness multiplies the effect of fatigue on stress"
+    ],
+    "pathological_extremes": [
+      "desperation behavior",
+      "reduced planning quality",
+      "collapse into passive idling or crisis actions"
+    ],
+    "real_world_validation": [
+      "chronic stress impairs cognition and worsens health outcomes"
+    ],
+    "implementation_notes": [
+      "derived agent-local feature",
+      "recomputed every tick from compact state"
+    ],
+    "tags": [
+      "core",
+      "derived",
+      "agent"
+    ]
+  },
+  {
+    "feature_id": "eco.deprivation_risk",
+    "feature_name": "Deprivation Risk",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Low liquidity plus biological need pressure increase the chance of unmet essentials.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from available cash and hunger pressure relative to local food cost.",
+    "upstream_causes": [
+      "cash reserves",
+      "food prices",
+      "joblessness",
+      "hunger deficit"
+    ],
+    "downstream_effects": [
+      "stress load",
+      "work pressure",
+      "crisis probability"
+    ],
+    "interaction_rules": [
+      "deprivation rises as cash falls below subsistence reserves",
+      "inflation increases deprivation even at stable wages",
+      "job income reduces deprivation with a delay"
+    ],
+    "pathological_extremes": [
+      "food insecurity",
+      "desperation spending",
+      "downward health spiral"
+    ],
+    "real_world_validation": [
+      "economic precarity predicts stress, illness, and reduced agency"
+    ],
+    "implementation_notes": [
+      "derived each tick",
+      "uses agent money and world food cost"
+    ],
+    "tags": [
+      "core",
+      "derived",
+      "economy"
+    ]
+  },
+  {
+    "feature_id": "social.support_index",
+    "feature_name": "Social Support Index",
+    "domain": "Social",
+    "scale": "Dyad",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Positive bonds and repeated reciprocal interactions form a stabilizing support network.",
+    "state_space": "Continuous scalar from 0 to 100 plus directional edge list.",
+    "measurement": "Aggregated from friend count, rival count, and relationship bond strengths.",
+    "upstream_causes": [
+      "socializing frequency",
+      "compatibility",
+      "marriage",
+      "conflict"
+    ],
+    "downstream_effects": [
+      "resilience",
+      "distress",
+      "marriage probability"
+    ],
+    "interaction_rules": [
+      "friend bonds increase support faster than acquaintances",
+      "rival bonds subtract from perceived safety",
+      "marriage adds a persistent support floor"
+    ],
+    "pathological_extremes": [
+      "isolation",
+      "social fragility",
+      "high-conflict reputation spirals"
+    ],
+    "real_world_validation": [
+      "social support protects against distress and poor health"
+    ],
+    "implementation_notes": [
+      "derived from relationship graph",
+      "updated after social actions and life events"
+    ],
+    "tags": [
+      "core",
+      "social",
+      "relationship"
+    ]
+  },
+  {
+    "feature_id": "path.illness_burden",
+    "feature_name": "Illness Burden",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Days",
+    "observability": "Directly measurable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "An active illness consumes energy, increases frailty, and compounds unmet needs.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Stored as illness severity when sick, zero otherwise.",
+    "upstream_causes": [
+      "base infection chance",
+      "weakness",
+      "medical care",
+      "time"
+    ],
+    "downstream_effects": [
+      "energy decay",
+      "stress load",
+      "mortality risk"
+    ],
+    "interaction_rules": [
+      "illness severity increases each tick while untreated",
+      "doctor visits can reset illness burden",
+      "low energy increases infection risk"
+    ],
+    "pathological_extremes": [
+      "fatal disease progression",
+      "chronic weakness",
+      "economic instability from lost productivity"
+    ],
+    "real_world_validation": [
+      "disease severity interacts with nutrition and exhaustion"
+    ],
+    "implementation_notes": [
+      "stored on each agent",
+      "contributes to multiple derived dimensions"
+    ],
+    "tags": [
+      "health",
+      "disease",
+      "core"
+    ]
+  },
+  {
+    "feature_id": "cog.decision_clarity",
+    "feature_name": "Decision Clarity",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Energy, morale, and illness jointly influence how coherently an agent can select actions.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from energy, happiness, and illness burden.",
+    "upstream_causes": [
+      "sleep reserve",
+      "morale",
+      "illness burden"
+    ],
+    "downstream_effects": [
+      "action quality",
+      "AI escalation frequency",
+      "idle likelihood"
+    ],
+    "interaction_rules": [
+      "clarity decreases with illness and exhaustion",
+      "morale partially offsets depletion",
+      "higher clarity improves work and social decisions"
+    ],
+    "pathological_extremes": [
+      "erratic choices",
+      "passivity",
+      "bad tradeoffs under crisis"
+    ],
+    "real_world_validation": [
+      "cognitive performance declines with sleep loss and illness"
+    ],
+    "implementation_notes": [
+      "derived feature used by decision scoring"
+    ],
+    "tags": [
+      "cognition",
+      "decision-making",
+      "derived"
+    ]
+  },
+  {
+    "feature_id": "temp.life_stage",
+    "feature_name": "Life Stage",
+    "domain": "Temporal",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Directly measurable",
+    "reversibility": "Irreversible",
+    "emergence_class": "Evolutionary",
+    "mechanism": "Age progression changes eligibility for work, marriage, fertility, and frailty.",
+    "state_space": "Categorical: child, adult, elder.",
+    "measurement": "Derived from age ticks converted to simulation years.",
+    "upstream_causes": [
+      "time"
+    ],
+    "downstream_effects": [
+      "employment access",
+      "marriage eligibility",
+      "mortality risk"
+    ],
+    "interaction_rules": [
+      "agents below adulthood are action-limited",
+      "fertility depends on adult stage and sex-specific constraints",
+      "old age increases death probability"
+    ],
+    "pathological_extremes": [
+      "frailty",
+      "late-life mortality"
+    ],
+    "real_world_validation": [
+      "age strongly shapes work capacity, fertility, and mortality"
+    ],
+    "implementation_notes": [
+      "persisted as age ticks, exposed as derived life stage"
+    ],
+    "tags": [
+      "lifecycle",
+      "temporal",
+      "core"
+    ]
+  },
+  {
+    "feature_id": "inst.role_legibility",
+    "feature_name": "Role Legibility",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "An agent's current job and adult status determine how legible their function is to the wider settlement.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from employment status, adulthood, and specialized role occupancy.",
+    "upstream_causes": [
+      "job assignment",
+      "age",
+      "institutional access"
+    ],
+    "downstream_effects": [
+      "social trust",
+      "economic stability",
+      "coordination efficiency"
+    ],
+    "interaction_rules": [
+      "named jobs increase role legibility more than unemployment",
+      "specialized jobs add a prestige premium",
+      "children have minimal institutional legibility"
+    ],
+    "pathological_extremes": [
+      "role confusion",
+      "weak coordination",
+      "institutional fragility"
+    ],
+    "real_world_validation": [
+      "clear social roles improve coordination and trust in communities"
+    ],
+    "implementation_notes": [
+      "derived from job and life stage"
+    ],
+    "tags": [
+      "institutional",
+      "derived"
+    ]
+  },
+  {
+    "feature_id": "env.weather_exposure",
+    "feature_name": "Weather Exposure",
+    "domain": "Environmental",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Directly measurable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Ambient weather modifies comfort, mood, and stamina over time.",
+    "state_space": "Categorical weather mapped to continuous impact weights.",
+    "measurement": "Computed from current world weather and environmental effect table.",
+    "upstream_causes": [
+      "weather state",
+      "time progression"
+    ],
+    "downstream_effects": [
+      "happiness",
+      "energy",
+      "stress load"
+    ],
+    "interaction_rules": [
+      "stormy weather applies stronger negative modifiers than cloudy weather",
+      "sunny conditions add mild energy and morale recovery",
+      "exposure compounds with existing fatigue"
+    ],
+    "pathological_extremes": [
+      "morale collapse under repeated harsh weather",
+      "reduced productivity"
+    ],
+    "real_world_validation": [
+      "weather and light exposure affect mood and energy"
+    ],
+    "implementation_notes": [
+      "world-global modifier applied each tick"
+    ],
+    "tags": [
+      "environment",
+      "world"
+    ]
+  },
+  {
+    "feature_id": "mat.job_capability",
+    "feature_name": "Job Capability",
+    "domain": "Technological",
+    "scale": "Organism",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Skill accumulation, energy, and role access determine how effectively an agent can use work tools and routines.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from job skill, energy, and ambition.",
+    "upstream_causes": [
+      "practice",
+      "current job",
+      "energy",
+      "ambition"
+    ],
+    "downstream_effects": [
+      "wage multiplier",
+      "economic resilience",
+      "future productivity"
+    ],
+    "interaction_rules": [
+      "every work action slightly increases job-specific skill",
+      "capability increases wages up to a multiplier ceiling",
+      "fatigue suppresses effective capability"
+    ],
+    "pathological_extremes": [
+      "skill stagnation",
+      "low output despite employment"
+    ],
+    "real_world_validation": [
+      "human capital and experience increase productivity and earning power"
+    ],
+    "implementation_notes": [
+      "stored as skill per job and exposed as derived capability"
+    ],
+    "tags": [
+      "material",
+      "skills",
+      "economy"
+    ]
+  },
+  {
+    "feature_id": "comm.outreach_drive",
+    "feature_name": "Outreach Drive",
+    "domain": "Informational",
+    "scale": "Dyad",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Sociability, low morale, and unmet support needs create pressure to initiate communication.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from sociability trait, morale deficit, and social support level.",
+    "upstream_causes": [
+      "sociability",
+      "happiness",
+      "social isolation"
+    ],
+    "downstream_effects": [
+      "socialize action scoring",
+      "relationship growth",
+      "marriage emergence"
+    ],
+    "interaction_rules": [
+      "low support increases outreach more strongly for social personalities",
+      "reclusive personalities dampen outreach despite low happiness",
+      "successful social contact can reduce future outreach pressure"
+    ],
+    "pathological_extremes": [
+      "isolation lock-in",
+      "social overreach under distress"
+    ],
+    "real_world_validation": [
+      "personality and loneliness affect social-seeking behavior"
+    ],
+    "implementation_notes": [
+      "derived feature used in dimensional state and social planning"
+    ],
+    "tags": [
+      "communication",
+      "social",
+      "derived"
+    ]
+  },
+  {
+    "feature_id": "cause.crisis_load",
+    "feature_name": "Crisis Load",
+    "domain": "Temporal",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Counterfactual",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Multiple pressures stack into a single causal burden that predicts breakdown or recovery difficulty.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from deprivation risk, illness burden, and weak social support.",
+    "upstream_causes": [
+      "deprivation",
+      "illness burden",
+      "support collapse"
+    ],
+    "downstream_effects": [
+      "crisis alerts",
+      "mortality pressure",
+      "idle collapse"
+    ],
+    "interaction_rules": [
+      "stacked moderate pressures can be more dangerous than one isolated extreme",
+      "support and resilience reduce crisis amplification",
+      "persistent crisis load degrades morale over time"
+    ],
+    "pathological_extremes": [
+      "death spiral",
+      "acute crisis clustering",
+      "persistent instability"
+    ],
+    "real_world_validation": [
+      "compounding social, economic, and health stressors produce nonlinear breakdown risk"
+    ],
+    "implementation_notes": [
+      "derived causal synthesis metric"
+    ],
+    "tags": [
+      "causal",
+      "risk",
+      "derived"
+    ]
+  },
+  {
+    "feature_id": "aff.resilience",
+    "feature_name": "Resilience",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Traits, support, and current morale create recovery capacity under pressure.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from empathy, ambition, happiness, and illness burden.",
+    "upstream_causes": [
+      "empathy",
+      "ambition",
+      "morale",
+      "support"
+    ],
+    "downstream_effects": [
+      "recovery headroom",
+      "stress damping",
+      "survival quality"
+    ],
+    "interaction_rules": [
+      "illness reduces effective resilience",
+      "social support boosts resilience more when morale is low",
+      "higher resilience dampens crisis accumulation"
+    ],
+    "pathological_extremes": [
+      "brittleness under shock",
+      "inability to recover from small setbacks"
+    ],
+    "real_world_validation": [
+      "resilience is shaped by internal traits and external social buffers"
+    ],
+    "implementation_notes": [
+      "derived feature available on every agent snapshot"
+    ],
+    "tags": [
+      "affective",
+      "recovery",
+      "derived"
+    ]
+  },
+  {
+    "feature_id": "eco.liquid_cash_holdings",
+    "feature_name": "Liquid Cash Holdings",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Directly measurable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Currency and demand deposits held by agents, subject to inflation erosion.",
+    "state_space": "Continuous scalar representing cash amount.",
+    "measurement": "Stored as agent.money minus illiquid assets.",
+    "upstream_causes": [
+      "income",
+      "spending",
+      "savings behavior"
+    ],
+    "downstream_effects": [
+      "purchasing power",
+      "deprivation risk",
+      "stress load"
+    ],
+    "interaction_rules": [
+      "inflation reduces real value over time",
+      "low cash increases vulnerability to shocks"
+    ],
+    "pathological_extremes": [
+      "complete liquidity collapse",
+      "hyperinflation wipeout"
+    ],
+    "real_world_validation": [
+      "cash holdings correlate with economic security"
+    ],
+    "implementation_notes": [
+      "already in agent state as money"
+    ],
+    "tags": [
+      "core",
+      "economy",
+      "asset"
+    ]
+  },
+  {
+    "feature_id": "eco.commodity_stockpiles",
+    "feature_name": "Commodity Stockpiles",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Physical goods like grain, metals, and oil held as inventory with storage costs.",
+    "state_space": "Continuous scalar from 0 to inventory capacity.",
+    "measurement": "Tracked in agent inventory systems.",
+    "upstream_causes": [
+      "production",
+      "purchasing",
+      "storage access"
+    ],
+    "downstream_effects": [
+      "consumption smoothing",
+      "price volatility"
+    ],
+    "interaction_rules": [
+      "spoilage reduces effective stockpile value",
+      "storage costs drain resources"
+    ],
+    "pathological_extremes": [
+      "complete spoilage loss",
+      "storage cost insolvency"
+    ],
+    "real_world_validation": [
+      "commodity stockpiles buffer price shocks"
+    ],
+    "implementation_notes": [
+      "optional inventory tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "storage"
+    ]
+  },
+  {
+    "feature_id": "eco.real_estate_quality",
+    "feature_name": "Real Estate Quality",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Quality of owned real estate based on structure, location, and title clarity.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from property assessments and title verification.",
+    "upstream_causes": [
+      "purchase",
+      "maintenance",
+      "location"
+    ],
+    "downstream_effects": [
+      "wealth",
+      "shelter security",
+      "credit access"
+    ],
+    "interaction_rules": [
+      "deferred maintenance degrades quality",
+      "title disputes create uncertainty"
+    ],
+    "pathological_extremes": [
+      "total property loss",
+      "title fraud exposure"
+    ],
+    "real_world_validation": [
+      "real estate quality strongly predicts wealth"
+    ],
+    "implementation_notes": [
+      "property tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "property"
+    ]
+  },
+  {
+    "feature_id": "eco.real_estate_location_score",
+    "feature_name": "Real Estate Location Score",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Value derived from access to markets, defense, water, and fertility.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from geographic and infrastructural features.",
+    "upstream_causes": [
+      "settlement location",
+      "infrastructure development"
+    ],
+    "downstream_effects": [
+      "property value",
+      "productivity",
+      "security"
+    ],
+    "interaction_rules": [
+      "market access improves location score",
+      "conflict reduces defensive value"
+    ],
+    "pathological_extremes": [
+      "abandonment due to insecurity",
+      "complete isolation"
+    ],
+    "real_world_validation": [
+      "location strongly predicts real estate value"
+    ],
+    "implementation_notes": [
+      "geographic scoring module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "location"
+    ]
+  },
+  {
+    "feature_id": "eco.productive_capital_tools",
+    "feature_name": "Productive Capital (Tools)",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Directly measurable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Tools and equipment with wear state and technological vintage.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from tool inventory and wear assessments.",
+    "upstream_causes": [
+      "purchase",
+      "maintenance",
+      "technology access"
+    ],
+    "downstream_effects": [
+      "productivity",
+      "wage premium",
+      "job capability"
+    ],
+    "interaction_rules": [
+      "wear reduces tool effectiveness",
+      "newer tools increase capability"
+    ],
+    "pathological_extremes": [
+      "complete tool failure",
+      "technological obsolescence"
+    ],
+    "real_world_validation": [
+      "capital equipment strongly predicts productivity"
+    ],
+    "implementation_notes": [
+      "tool tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "capital"
+    ]
+  },
+  {
+    "feature_id": "eco.livestock_holdings",
+    "feature_name": "Livestock Holdings",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Days",
+    "observability": "Directly measurable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Breeding vs. consumption animals; walking bank account metaphor.",
+    "state_space": "Integer count by category.",
+    "measurement": "Tracked animal counts.",
+    "upstream_causes": [
+      "breeding",
+      "purchase",
+      "grazing access"
+    ],
+    "downstream_effects": [
+      "food source",
+      "wealth buffer",
+      "labor"
+    ],
+    "interaction_rules": [
+      "breeding stock provides sustainability",
+      "disease can devastate holdings"
+    ],
+    "pathological_extremes": [
+      "disease wipeout",
+      "theft or raiding loss"
+    ],
+    "real_world_validation": [
+      "livestock is traditional wealth storage"
+    ],
+    "implementation_notes": [
+      "animal tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "livestock"
+    ]
+  },
+  {
+    "feature_id": "eco.ship_vehicle_fleet",
+    "feature_name": "Ship/Vehicle Fleet",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Directly measurable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Transport capacity with maintenance state and crew requirements.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from vehicle count and condition.",
+    "upstream_causes": [
+      "purchase",
+      "maintenance",
+      "crew availability"
+    ],
+    "downstream_effects": [
+      "transport capacity",
+      "trade access",
+      "mobility"
+    ],
+    "interaction_rules": [
+      "maintenance maintains fleet value",
+      "crew shortage reduces capacity"
+    ],
+    "pathological_extremes": [
+      "fleet destruction",
+      "crew inability to operate"
+    ],
+    "real_world_validation": [
+      "transport capacity enables trade"
+    ],
+    "implementation_notes": [
+      "vehicle tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "transport"
+    ]
+  },
+  {
+    "feature_id": "eco.financial_instruments_bonds",
+    "feature_name": "Financial Instruments (Bonds)",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Bond holdings with coupon rate, maturity, issuer credit, and callable features.",
+    "state_space": "Continuous scalar representing value.",
+    "measurement": "Portfolio value of bond holdings.",
+    "upstream_causes": [
+      "purchase",
+      "coupon payments",
+      "maturity"
+    ],
+    "downstream_effects": [
+      "income",
+      "portfolio diversification",
+      "risk"
+    ],
+    "interaction_rules": [
+      "higher coupon increases income",
+      "callable bonds face early redemption risk"
+    ],
+    "pathological_extremes": [
+      "default on principal",
+      "interest rate spike losses"
+    ],
+    "real_world_validation": [
+      "bonds provide fixed income"
+    ],
+    "implementation_notes": [
+      "financial portfolio module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "bonds"
+    ]
+  },
+  {
+    "feature_id": "eco.equity_shares",
+    "feature_name": "Equity Shares",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Days",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Ownership percentage with voting rights, dividend history, and dilution risk.",
+    "state_space": "Continuous scalar representing ownership percentage.",
+    "measurement": "Portfolio holdings and ownership percentage.",
+    "upstream_causes": [
+      "purchase",
+      "dividends",
+      "stock offerings"
+    ],
+    "downstream_effects": [
+      "capital gains",
+      "voting power",
+      "income"
+    ],
+    "interaction_rules": [
+      "dividends provide income",
+      "dilution reduces ownership percentage"
+    ],
+    "pathological_extremes": [
+      "total loss from bankruptcy",
+      "complete dilution"
+    ],
+    "real_world_validation": [
+      "equity ownership builds wealth over time"
+    ],
+    "implementation_notes": [
+      "equity tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "equity"
+    ]
+  },
+  {
+    "feature_id": "eco.options_contracts",
+    "feature_name": "Options Contracts",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Options with strike price, expiration, premium, and Greeks metrics.",
+    "state_space": "Continuous scalar representing contract value.",
+    "measurement": "Portfolio value and Greeks.",
+    "upstream_causes": [
+      "purchase",
+      "underlying price movement"
+    ],
+    "downstream_effects": [
+      "leverage",
+      "hedging",
+      "losses"
+    ],
+    "interaction_rules": [
+      "time decay erodes option value",
+      "volatility increases premiums"
+    ],
+    "pathological_extremes": [
+      "total premium loss",
+      "margin calls on exercise"
+    ],
+    "real_world_validation": [
+      "options provide leverage and hedging"
+    ],
+    "implementation_notes": [
+      "options pricing module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "derivatives"
+    ]
+  },
+  {
+    "feature_id": "eco.insurance_policies",
+    "feature_name": "Insurance Policies",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Coverage type, premium, deductible, exclusions, and insurer solvency.",
+    "state_space": "Categorical by policy type.",
+    "measurement": "Policy details and coverage status.",
+    "upstream_causes": [
+      "purchase",
+      "claims",
+      "premium payments"
+    ],
+    "downstream_effects": [
+      "risk transfer",
+      "cost certainty",
+      "claims"
+    ],
+    "interaction_rules": [
+      "higher deductibles reduce premiums",
+      "exclusions limit coverage"
+    ],
+    "pathological_extremes": [
+      "claim denial",
+      "insurer insolvency"
+    ],
+    "real_world_validation": [
+      "insurance transfers risk"
+    ],
+    "implementation_notes": [
+      "insurance tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "insurance"
+    ]
+  },
+  {
+    "feature_id": "eco.intellectual_property",
+    "feature_name": "Intellectual Property",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Patent strength, trade secret protection, and licensing revenue.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "IP portfolio value.",
+    "upstream_causes": [
+      "filing",
+      "protection",
+      "licensing"
+    ],
+    "downstream_effects": [
+      "royalty income",
+      "competitive advantage"
+    ],
+    "interaction_rules": [
+      "patents expire over time",
+      "licensing generates ongoing income"
+    ],
+    "pathological_extremes": [
+      "patent invalidation",
+      "trade secret exposure"
+    ],
+    "real_world_validation": [
+      "IP creates sustainable income streams"
+    ],
+    "implementation_notes": [
+      "IP portfolio module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "ip"
+    ]
+  },
+  {
+    "feature_id": "eco.social_capital_network_value",
+    "feature_name": "Social Capital (Network Value)",
+    "domain": "Economic",
+    "scale": "Dyad",
+    "timescale": "Months",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Connections to powerful agents creating non-monetary convertible value.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from relationship network quality.",
+    "upstream_causes": [
+      "socializing",
+      "favors",
+      "networking"
+    ],
+    "downstream_effects": [
+      "opportunity access",
+      "information",
+      "favors"
+    ],
+    "interaction_rules": [
+      "high-status connections increase value",
+      "neglect degrades network value"
+    ],
+    "pathological_extremes": [
+      "network abandonment",
+      "relationship betrayal"
+    ],
+    "real_world_validation": [
+      "social connections enable opportunity"
+    ],
+    "implementation_notes": [
+      "relationship tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "social"
+    ]
+  },
+  {
+    "feature_id": "eco.human_capital_skill_portfolio",
+    "feature_name": "Human Capital (Skill Portfolio)",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Evolutionary",
+    "mechanism": "Transferable vs. firm-specific skills with depreciation rate.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Skill assessments and certifications.",
+    "upstream_causes": [
+      "education",
+      "practice",
+      "training"
+    ],
+    "downstream_effects": [
+      "wage premium",
+      "job security",
+      "adaptability"
+    ],
+    "interaction_rules": [
+      "firm-specific skills depreciate on job change",
+      "certifications maintain value"
+    ],
+    "pathological_extremes": [
+      "skill obsolescence",
+      "complete depreciation"
+    ],
+    "real_world_validation": [
+      "human capital predicts lifetime earnings"
+    ],
+    "implementation_notes": [
+      "skill tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "human"
+    ]
+  },
+  {
+    "feature_id": "eco.natural_resource_rights",
+    "feature_name": "Natural Resource Rights",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Water, mineral, timber, and grazing rights with extraction limits.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Rights holdings and extraction quotas.",
+    "upstream_causes": [
+      "acquisition",
+      "regulation",
+      "discovery"
+    ],
+    "downstream_effects": [
+      "extraction income",
+      "resource sustainability"
+    ],
+    "interaction_rules": [
+      "extraction limits prevent overuse",
+      "regulation protects long-term value"
+    ],
+    "pathological_extremes": [
+      "rights revocation",
+      "resource depletion"
+    ],
+    "real_world_validation": [
+      "resource rights provide ongoing income"
+    ],
+    "implementation_notes": [
+      "rights tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "resources"
+    ]
+  },
+  {
+    "feature_id": "eco.monopoly_privileges",
+    "feature_name": "Monopoly Privileges",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Guild membership, royal charter, or patent exclusivity.",
+    "state_space": "Binary or categorical.",
+    "measurement": "Privilege status and scope.",
+    "upstream_causes": [
+      "grant",
+      "membership",
+      "patents"
+    ],
+    "downstream_effects": [
+      "market control",
+      "price setting",
+      "barriers"
+    ],
+    "interaction_rules": [
+      "exclusive rights prevent competition",
+      "privileges can be revoked"
+    ],
+    "pathological_extremes": [
+      "privilege revocation",
+      "competition emergence"
+    ],
+    "real_world_validation": [
+      "monopolies control market access"
+    ],
+    "implementation_notes": [
+      "privilege tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "monopoly"
+    ]
+  },
+  {
+    "feature_id": "eco.debt_instruments_held",
+    "feature_name": "Debt Instruments Held",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Loans to others with default risk and collection costs.",
+    "state_space": "Continuous scalar representing loan value.",
+    "measurement": "Outstanding loan portfolio.",
+    "upstream_causes": [
+      "lending",
+      "interest payments",
+      "collections"
+    ],
+    "downstream_effects": [
+      "interest income",
+      "default losses"
+    ],
+    "interaction_rules": [
+      "higher risk loans pay higher rates",
+      "collection costs reduce net returns"
+    ],
+    "pathological_extremes": [
+      "complete default",
+      "collection insolvency"
+    ],
+    "real_world_validation": [
+      "loan portfolios provide interest income"
+    ],
+    "implementation_notes": [
+      "loan tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "debt"
+    ]
+  },
+  {
+    "feature_id": "eco.foreign_currency_holdings",
+    "feature_name": "Foreign Currency Holdings",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Foreign exchange holdings with exchange rate risk and safe haven demand.",
+    "state_space": "Continuous scalar representing FX value.",
+    "measurement": "Portfolio in home currency equivalent.",
+    "upstream_causes": [
+      "earnings",
+      "exchange",
+      "conversion"
+    ],
+    "downstream_effects": [
+      "exchange rate gains",
+      "hedge value",
+      "losses"
+    ],
+    "interaction_rules": [
+      "currency depreciation erodes value",
+      "safe haven demand increases in crisis"
+    ],
+    "pathological_extremes": [
+      "complete exchange loss",
+      "currency collapse"
+    ],
+    "real_world_validation": [
+      "FX holdings provide international access"
+    ],
+    "implementation_notes": [
+      "FX tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "currency"
+    ]
+  },
+  {
+    "feature_id": "eco.cryptographic_assets",
+    "feature_name": "Cryptographic Assets",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Blockchain-based assets with volatility and regulatory uncertainty.",
+    "state_space": "Continuous scalar representing crypto value.",
+    "measurement": "Portfolio in fiat equivalent.",
+    "upstream_causes": [
+      "purchase",
+      "mining",
+      "airdrops"
+    ],
+    "downstream_effects": [
+      "high gains",
+      "regulatory risk",
+      "losses"
+    ],
+    "interaction_rules": [
+      "extreme volatility creates opportunity",
+      "regulation can eliminate value"
+    ],
+    "pathological_extremes": [
+      "complete value collapse",
+      "regulatory prohibition"
+    ],
+    "real_world_validation": [
+      "crypto provides high-risk high-reward"
+    ],
+    "implementation_notes": [
+      "crypto tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "crypto"
+    ]
+  },
+  {
+    "feature_id": "eco.collectibles_art",
+    "feature_name": "Collectibles & Art",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Aesthetic value, provenance, liquidity, and forgery risk.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Appraisal value.",
+    "upstream_causes": [
+      "purchase",
+      "authentication",
+      "display"
+    ],
+    "downstream_effects": [
+      "store of value",
+      "status",
+      "liquidity"
+    ],
+    "interaction_rules": [
+      "provenance increases value",
+      "forgery destroys trust and value"
+    ],
+    "pathological_extremes": [
+      "forgery exposure",
+      "liquidity crisis"
+    ],
+    "real_world_validation": [
+      "art is traditional wealth storage"
+    ],
+    "implementation_notes": [
+      "art tracking module"
+    ],
+    "tags": [
+      "economy",
+      "asset",
+      "art"
+    ]
+  },
+  {
+    "feature_id": "mkt.bid_ask_spread",
+    "feature_name": "Bid-Ask Spread",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Liquidity measure; spread widens in uncertainty.",
+    "state_space": "Continuous scalar representing spread percentage.",
+    "measurement": "Computed from order book.",
+    "upstream_causes": [
+      "liquidity",
+      "uncertainty",
+      "volatility"
+    ],
+    "downstream_effects": [
+      "trading friction",
+      "market efficiency"
+    ],
+    "interaction_rules": [
+      "higher volatility widens spread",
+      "more liquidity tightens spread"
+    ],
+    "pathological_extremes": [
+      "infinite spread",
+      "complete illiquidity"
+    ],
+    "real_world_validation": [
+      "bid-ask spread is standard liquidity measure"
+    ],
+    "implementation_notes": [
+      "market data tracking"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "liquidity"
+    ]
+  },
+  {
+    "feature_id": "mkt.market_depth",
+    "feature_name": "Market Depth",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Volume available at each price level; prevents large price moves.",
+    "state_space": "Continuous scalar representing depth.",
+    "measurement": "Order book volume at price levels.",
+    "upstream_causes": [
+      "liquidity provision",
+      "order flow"
+    ],
+    "downstream_effects": [
+      "price stability",
+      "impact reduction"
+    ],
+    "interaction_rules": [
+      "deep markets prevent manipulation",
+      "shallow markets allow large moves"
+    ],
+    "pathological_extremes": [
+      "complete depth collapse",
+      "one-sided depth"
+    ],
+    "real_world_validation": [
+      "market depth enables large trades"
+    ],
+    "implementation_notes": [
+      "order book analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "depth"
+    ]
+  },
+  {
+    "feature_id": "mkt.order_book_imbalance",
+    "feature_name": "Order Book Imbalance",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Buy vs. sell pressure; predicts short-term direction.",
+    "state_space": "Continuous scalar from -100 to 100.",
+    "measurement": "Buy-sell volume ratio.",
+    "upstream_causes": [
+      "order flow",
+      "sentiment"
+    ],
+    "downstream_effects": [
+      "price direction",
+      "momentum"
+    ],
+    "interaction_rules": [
+      "buy pressure pushes price up",
+      "sell pressure pushes price down"
+    ],
+    "pathological_extremes": [
+      "extreme imbalance",
+      "one-sided market"
+    ],
+    "real_world_validation": [
+      "order imbalance predicts direction"
+    ],
+    "implementation_notes": [
+      "order book analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "imbalance"
+    ]
+  },
+  {
+    "feature_id": "mkt.vwap",
+    "feature_name": "Volume-Weighted Average Price (VWAP)",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Minutes",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Benchmark for large trades.",
+    "state_space": "Continuous scalar price.",
+    "measurement": "Calculated from trade volume and price.",
+    "upstream_causes": [
+      "trades",
+      "volume"
+    ],
+    "downstream_effects": [
+      "execution benchmark",
+      "trading cost"
+    ],
+    "interaction_rules": [
+      "trades near VWAP are fair",
+      "large deviations indicate impact"
+    ],
+    "pathological_extremes": [
+      "no trades",
+      "single trade dominance"
+    ],
+    "real_world_validation": [
+      "VWAP is standard execution benchmark"
+    ],
+    "implementation_notes": [
+      "trade analytics"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "benchmark"
+    ]
+  },
+  {
+    "feature_id": "mkt.slippage",
+    "feature_name": "Slippage",
+    "domain": "Economic",
+    "scale": "Organism",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Executed price vs. expected; increases with order size.",
+    "state_space": "Continuous scalar representing percentage.",
+    "measurement": "Expected minus executed price.",
+    "upstream_causes": [
+      "order size",
+      "market impact",
+      "latency"
+    ],
+    "downstream_effects": [
+      "trading cost",
+      "execution quality"
+    ],
+    "interaction_rules": [
+      "larger orders slip more",
+      "faster execution reduces slippage"
+    ],
+    "pathological_extremes": [
+      "extreme slippage",
+      "execution failure"
+    ],
+    "real_world_validation": [
+      "slippage is execution cost"
+    ],
+    "implementation_notes": [
+      "execution analytics"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "cost"
+    ]
+  },
+  {
+    "feature_id": "mkt.price_impact_function",
+    "feature_name": "Price Impact Function",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "How much a trade moves the market; square root law.",
+    "state_space": "Continuous scalar representing impact.",
+    "measurement": "Price change per unit volume.",
+    "upstream_causes": [
+      "trade size",
+      "liquidity",
+      "volatility"
+    ],
+    "downstream_effects": [
+      "trading cost",
+      "market efficiency"
+    ],
+    "interaction_rules": [
+      "impact grows with square root of size",
+      "volatile markets amplify impact"
+    ],
+    "pathological_extremes": [
+      "infinite impact",
+      "market rupture"
+    ],
+    "real_world_validation": [
+      "price impact follows square root law"
+    ],
+    "implementation_notes": [
+      "impact modeling"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "impact"
+    ]
+  },
+  {
+    "feature_id": "mkt.volatility_clustering",
+    "feature_name": "Volatility Clustering",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "High volatility periods cluster; GARCH models capture this.",
+    "state_space": "Continuous scalar representing volatility.",
+    "measurement": "GARCH model output.",
+    "upstream_causes": [
+      "shocks",
+      "past volatility"
+    ],
+    "downstream_effects": [
+      "risk",
+      "option pricing",
+      "market behavior"
+    ],
+    "interaction_rules": [
+      "high volatility leads to more high volatility",
+      "mean reVERSION eventually occurs"
+    ],
+    "pathological_extremes": [
+      "volatility explosion",
+      "volatility collapse"
+    ],
+    "real_world_validation": [
+      "volatility clustering is empirical fact"
+    ],
+    "implementation_notes": [
+      "GARCH modeling"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "volatility"
+    ]
+  },
+  {
+    "feature_id": "mkt.mean_reversion_speed",
+    "feature_name": "Mean Reversion Speed",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Days",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "How fast prices return to trend; varies by asset.",
+    "state_space": "Continuous scalar representing speed.",
+    "measurement": "Half-life of deviation.",
+    "upstream_causes": [
+      "fundamental value",
+      "arbitrage"
+    ],
+    "downstream_effects": [
+      "trading strategy",
+      "pricing efficiency"
+    ],
+    "interaction_rules": [
+      "faster reversion means efficiency",
+      "slow reversion creates opportunities"
+    ],
+    "pathological_extremes": [
+      "no reversion",
+      "explosive behavior"
+    ],
+    "real_world_validation": [
+      "mean reversion is empirical"
+    ],
+    "implementation_notes": [
+      "time series analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "reversion"
+    ]
+  },
+  {
+    "feature_id": "mkt.momentum_persistence",
+    "feature_name": "Momentum Persistence",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Trend continuation; 3-12 month horizon.",
+    "state_space": "Continuous scalar representing momentum.",
+    "measurement": "Price change over period.",
+    "upstream_causes": [
+      "sentiment",
+      "flow",
+      "fundamentals"
+    ],
+    "downstream_effects": [
+      "trend following",
+      "contrarian opportunities"
+    ],
+    "interaction_rules": [
+      "momentum continues until exhaustion",
+      "reversals can be sharp"
+    ],
+    "pathological_extremes": [
+      "momentum crash",
+      "trend reversal"
+    ],
+    "real_world_validation": [
+      "momentum is documented anomaly"
+    ],
+    "implementation_notes": [
+      "trend analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "momentum"
+    ]
+  },
+  {
+    "feature_id": "mkt.cross_asset_correlation",
+    "feature_name": "Cross-Asset Correlation",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Stocks, bonds, commodities co-movement; increases in crisis.",
+    "state_space": "Continuous scalar from -1 to 1.",
+    "measurement": "Correlation coefficient.",
+    "upstream_causes": [
+      "risk sentiment",
+      "macro factors"
+    ],
+    "downstream_effects": [
+      "portfolio Diversification",
+      "risk modeling"
+    ],
+    "interaction_rules": [
+      "crisis increases correlation",
+      "diversification fails when needed"
+    ],
+    "pathological_extremes": [
+      "perfect correlation",
+      "correlation breakdown"
+    ],
+    "real_world_validation": [
+      "correlation increases in crisis"
+    ],
+    "implementation_notes": [
+      "correlation analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "correlation"
+    ]
+  },
+  {
+    "feature_id": "mkt.liquidity_spiral",
+    "feature_name": "Liquidity Spiral",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Forced selling drops price, triggers margin calls, causes more selling.",
+    "state_space": "Binary spiral state.",
+    "measurement": "Margin call cascade detection.",
+    "upstream_causes": [
+      "price drop",
+      "margin calls",
+      "deleveraging"
+    ],
+    "downstream_effects": [
+      "further selling",
+      "credit contraction",
+      "recession"
+    ],
+    "interaction_rules": [
+      "price drop triggers margin calls",
+      "margin calls cause more selling"
+    ],
+    "pathological_extremes": [
+      "spiral to zero",
+      "complete freeze"
+    ],
+    "real_world_validation": [
+      "2008 crisis had liquidity spirals"
+    ],
+    "implementation_notes": [
+      "systemic risk monitoring"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "systemic"
+    ]
+  },
+  {
+    "feature_id": "mkt.flash_crash_dynamics",
+    "feature_name": "Flash Crash Dynamics",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Algorithmic feedback loops; 2010 Dow 1000-point drop.",
+    "state_space": "Binary crash state.",
+    "measurement": "Price drop velocity.",
+    "upstream_causes": [
+      "algorithmic trading",
+      "liquidity void",
+      " cascades"
+    ],
+    "downstream_effects": [
+      "circuit breakers",
+      "market halt"
+    ],
+    "interaction_rules": [
+      "algorithms can amplify",
+      "circuit breakers stop cascades"
+    ],
+    "pathological_extremes": [
+      "complete market failure",
+      "no recovery"
+    ],
+    "real_world_validation": [
+      "2010 flash crash was real event"
+    ],
+    "implementation_notes": [
+      "circuit breaker monitoring"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "crash"
+    ]
+  },
+  {
+    "feature_id": "mkt.hft_latency",
+    "feature_name": "High-Frequency Trading Latency",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Microseconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Microsecond advantage; colocation at exchanges.",
+    "state_space": "Continuous scalar in microseconds.",
+    "measurement": "Order to execution time.",
+    "upstream_causes": [
+      "technology",
+      "co-location"
+    ],
+    "downstream_effects": [
+      "execution advantage",
+      "market making"
+    ],
+    "interaction_rules": [
+      "lower latency wins",
+      "speed matters"
+    ],
+    "pathological_extremes": [
+      "latency explosion",
+      "connection failure"
+    ],
+    "real_world_validation": [
+      "HFT is major market participant"
+    ],
+    "implementation_notes": [
+      "latency monitoring"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "hft"
+    ]
+  },
+  {
+    "feature_id": "mkt.front_running",
+    "feature_name": "Front-Running",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Trading ahead of known large orders; illegal but detectable.",
+    "state_space": "Binary detection.",
+    "measurement": "Order flow analysis.",
+    "upstream_causes": [
+      "large orders",
+      "information leakage"
+    ],
+    "downstream_effects": [
+      "unfair execution",
+      "legal risk"
+    ],
+    "interaction_rules": [
+      "front-running profits from information",
+      "detection is possible"
+    ],
+    "pathological_extremes": [
+      "widespread front-running",
+      "complete information asymmetry"
+    ],
+    "real_world_validation": [
+      "front-running is prohibited"
+    ],
+    "implementation_notes": [
+      "market surveillance"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "fraud"
+    ]
+  },
+  {
+    "feature_id": "mkt.spoofing",
+    "feature_name": "Spoofing",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Fake orders to manipulate price; Layering and spoofing prosecution.",
+    "state_space": "Binary detection.",
+    "measurement": "Order pattern analysis.",
+    "upstream_causes": [
+      "order cancellation",
+      "price manipulation intent"
+    ],
+    "downstream_effects": [
+      "market manipulation",
+      "legal risk"
+    ],
+    "interaction_rules": [
+      "spoofed orders create false impression",
+      "cancellation reveals intent"
+    ],
+    "pathological_extremes": [
+      "widespread spoofing",
+      "no enforcement"
+    ],
+    "real_world_validation": [
+      "spoofing is prosecuted"
+    ],
+    "implementation_notes": [
+      "market surveillance"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "fraud"
+    ]
+  },
+  {
+    "feature_id": "mkt.wash_trading",
+    "feature_name": "Wash Trading",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Fake volume between same party; inflates apparent interest.",
+    "state_space": "Binary detection.",
+    "measurement": "Volume pattern analysis.",
+    "upstream_causes": [
+      "self-trading",
+      "collusion"
+    ],
+    "downstream_effects": [
+      "false liquidity",
+      "price manipulation"
+    ],
+    "interaction_rules": [
+      "wash trading inflates volume",
+      "detection requires ownership analysis"
+    ],
+    "pathological_extremes": [
+      "100% wash trading",
+      "complete illusion"
+    ],
+    "real_world_validation": [
+      "wash trading is prohibited"
+    ],
+    "implementation_notes": [
+      "market surveillance"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "fraud"
+    ]
+  },
+  {
+    "feature_id": "mkt.pump_and_dump",
+    "feature_name": "Pump and Dump Scheme",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Irreversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Hype then sell; penny stock classic.",
+    "state_space": "Binary scheme state.",
+    "measurement": "Price and volume pattern analysis.",
+    "upstream_causes": [
+      "coordinated promotion",
+      "accumulation"
+    ],
+    "downstream_effects": [
+      "price collapse",
+      "investor losses"
+    ],
+    "interaction_rules": [
+      "pump creates artificial demand",
+      "dump realizes gains for manipulators"
+    ],
+    "pathological_extremes": [
+      "complete collapse",
+      "no recovery"
+    ],
+    "real_world_validation": [
+      "pump and dump is classic fraud"
+    ],
+    "implementation_notes": [
+      "fraud detection"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "fraud"
+    ]
+  },
+  {
+    "feature_id": "mkt.short_squeeze",
+    "feature_name": "Short Squeeze",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Forced buying to cover shorts; GameStop 2021.",
+    "state_space": "Binary squeeze state.",
+    "measurement": "Short interest and price action.",
+    "upstream_causes": [
+      "high short interest",
+      "price increase",
+      "margin calls"
+    ],
+    "downstream_effects": [
+      "extreme price increase",
+      "shorts forced to cover"
+    ],
+    "interaction_rules": [
+      "short squeeze compounds as shorts cover",
+      "buying accelerates"
+    ],
+    "pathological_extremes": [
+      "extreme overvaluation",
+      "complete short capitulation"
+    ],
+    "real_world_validation": [
+      "GameStop 2021 was short squeeze"
+    ],
+    "implementation_notes": [
+      "short interest monitoring"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "squeeze"
+    ]
+  },
+  {
+    "feature_id": "mkt.contango_backwardation",
+    "feature_name": "Contango vs. Backwardation",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Days",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Futures price above or below spot; storage cost signal.",
+    "state_space": "Binary: contango or backwardation.",
+    "measurement": "Futures minus spot price.",
+    "upstream_causes": [
+      "storage costs",
+      "convenience yield",
+      "interest rates"
+    ],
+    "downstream_effects": [
+      "roll yield",
+      "arbitrage"
+    ],
+    "interaction_rules": [
+      "contango means futures above spot",
+      "backwardation means futures below spot"
+    ],
+    "pathological_extremes": [
+      "extreme contango",
+      "severe backwardation"
+    ],
+    "real_world_validation": [
+      "futures curve shape matters"
+    ],
+    "implementation_notes": [
+      "curve analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "futures"
+    ]
+  },
+  {
+    "feature_id": "mkt.carry_trade",
+    "feature_name": "Carry Trade",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Days",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Borrow low-yield currency, invest high-yield; yen popular funding.",
+    "state_space": "Continuous scalar representing carry.",
+    "measurement": "Interest rate differential.",
+    "upstream_causes": [
+      "interest rate differential",
+      "currency stability"
+    ],
+    "downstream_effects": [
+      "carry return",
+      "currency risk"
+    ],
+    "interaction_rules": [
+      "carry is carry difference",
+      "currency moves can overwhelm carry"
+    ],
+    "pathological_extremes": [
+      "carry collapse",
+      "currency crisis"
+    ],
+    "real_world_validation": [
+      "carry trade is documented strategy"
+    ],
+    "implementation_notes": [
+      "carry analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "currency"
+    ]
+  },
+  {
+    "feature_id": "mkt.currency_peg_defense",
+    "feature_name": "Currency Peg Defense",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Central bank selling reserves; George Soros vs Bank of England.",
+    "state_space": "Binary: defending or broken.",
+    "measurement": "Reserve depletion rate.",
+    "upstream_causes": [
+      "speculative attack",
+      "reserve adequacy"
+    ],
+    "downstream_effects": [
+      "peg survival",
+      "reserve exhaustion"
+    ],
+    "interaction_rules": [
+      "defense costs reserves",
+      "attack can be overwhelming"
+    ],
+    "pathological_extremes": [
+      "peg collapse",
+      "reserve exhaustion"
+    ],
+    "real_world_validation": [
+      "Soros broke BoE pound peg"
+    ],
+    "implementation_notes": [
+      "peg monitoring"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "currency"
+    ]
+  },
+  {
+    "feature_id": "mkt.sovereign_default_risk",
+    "feature_name": "Sovereign Default Risk",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Government bond haircuts; Argentina serial defaulter.",
+    "state_space": "Continuous scalar representing risk.",
+    "measurement": "CDS spreads and bond prices.",
+    "upstream_causes": [
+      "fiscal deficit",
+      "debt maturity",
+      "political"
+    ],
+    "downstream_effects": [
+      "default",
+      "restructuring",
+      "exclusion"
+    ],
+    "interaction_rules": [
+      "high debt increases default risk",
+      "restructuring imposes losses"
+    ],
+    "pathological_extremes": [
+      "complete default",
+      "exclusion from markets"
+    ],
+    "real_world_validation": [
+      "Argentina multiple defaults"
+    ],
+    "implementation_notes": [
+      "sovereign risk analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "sovereign"
+    ]
+  },
+  {
+    "feature_id": "mkt.cds_spread",
+    "feature_name": "Credit Default Swap Spread",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Insurance cost against default; Lehman indicator.",
+    "state_space": "Continuous scalar representing spread.",
+    "measurement": "CDS price in basis points.",
+    "upstream_causes": [
+      "default probability",
+      "recovery rate"
+    ],
+    "downstream_effects": [
+      "default prediction",
+      "loss severity"
+    ],
+    "interaction_rules": [
+      "higher spread means higher risk",
+      "spread spikes predict default"
+    ],
+    "pathological_extremes": [
+      "infinite spread",
+      "credit event"
+    ],
+    "real_world_validation": [
+      "Lehman CDS signaled crisis"
+    ],
+    "implementation_notes": [
+      "CDS analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "credit"
+    ]
+  },
+  {
+    "feature_id": "mkt.repo_market_freeze",
+    "feature_name": "Repo Market Freeze",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Collateralized lending stops; 2008 crisis mechanism.",
+    "state_space": "Binary: frozen or functioning.",
+    "measurement": "Repo rate and volume.",
+    "upstream_causes": [
+      "counterparty fear",
+      "collateral quality"
+    ],
+    "downstream_effects": [
+      "credit contraction",
+      "banking crisis"
+    ],
+    "interaction_rules": [
+      "fear freezes repo",
+      "frozen repo spreads fear"
+    ],
+    "pathological_extremes": [
+      "complete freeze",
+      "no collateral accepted"
+    ],
+    "real_world_validation": [
+      "2008 repo freeze amplified crisis"
+    ],
+    "implementation_notes": [
+      "repo monitoring"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "repo"
+    ]
+  },
+  {
+    "feature_id": "mkt.qe_impact",
+    "feature_name": "Quantitative Easing Impact",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Central bank asset purchases; wealth inequality channel.",
+    "state_space": "Continuous scalar representing impact.",
+    "measurement": "Balance sheet expansion and effects.",
+    "upstream_causes": [
+      "monetary policy",
+      "balance sheet"
+    ],
+    "downstream_effects": [
+      "asset prices",
+      "inequality",
+      "inflation"
+    ],
+    "interaction_rules": [
+      "QE raises asset prices",
+      "QE benefits asset holders"
+    ],
+    "pathological_extremes": [
+      " QE exhaustion",
+      "hyperinflation"
+    ],
+    "real_world_validation": [
+      "QE was major policy tool"
+    ],
+    "implementation_notes": [
+      "QE analysis"
+    ],
+    "tags": [
+      "economy",
+      "market",
+      "monetary"
+    ]
+  },
+  {
+    "feature_id": "bnk.reserve_requirement_ratio",
+    "feature_name": "Reserve Requirement Ratio",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Fraction banks must hold; affects money multiplier.",
+    "state_space": "Continuous scalar representing percentage.",
+    "measurement": "Regulatory requirement.",
+    "upstream_causes": [
+      "central bank policy",
+      "banking regulation"
+    ],
+    "downstream_effects": [
+      "money supply",
+      "lending capacity"
+    ],
+    "interaction_rules": [
+      "higher reserve reduces lending",
+      "lower reserve increases lending"
+    ],
+    "pathological_extremes": [
+      "zero reserve creates risk",
+      "100% reserve stops banking"
+    ],
+    "real_world_validation": [
+      "reserve requirements are standard tool"
+    ],
+    "implementation_notes": [
+      "regulation tracking"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "reserve"
+    ]
+  },
+  {
+    "feature_id": "bnk.money_multiplier",
+    "feature_name": "Money Multiplier",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Days",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Deposit creation from reserves; 1/reserve ratio theoretically.",
+    "state_space": "Continuous scalar representing multiplier.",
+    "measurement": "Derived from reserve ratio and currency ratio.",
+    "upstream_causes": [
+      "reserve ratio",
+      "currency ratio",
+      "excess reserves"
+    ],
+    "downstream_effects": [
+      "money supply",
+      "inflation"
+    ],
+    "interaction_rules": [
+      "higher multiplier means more money creation",
+      "fractional reserve creates money"
+    ],
+    "pathological_extremes": [
+      "multiplier collapse",
+      "no lending"
+    ],
+    "real_world_validation": [
+      "money multiplier is foundational"
+    ],
+    "implementation_notes": [
+      "multiplier calculation"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "money"
+    ]
+  },
+  {
+    "feature_id": "bnk.net_interest_margin",
+    "feature_name": "Net Interest Margin",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Lending rate minus deposit rate; bank profitability.",
+    "state_space": "Continuous scalar representing percentage.",
+    "measurement": "Interest income minus interest expense.",
+    "upstream_causes": [
+      "interest rates",
+      "competition",
+      "risk"
+    ],
+    "downstream_effects": [
+      "bank profitability",
+      "lending capacity"
+    ],
+    "interaction_rules": [
+      "higher NIM means more profit",
+      "competition compresses NIM"
+    ],
+    "pathological_extremes": [
+      "negative NIM",
+      "bank insolvency"
+    ],
+    "real_world_validation": [
+      "NIM is key bank metric"
+    ],
+    "implementation_notes": [
+      "NIM calculation"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "profitability"
+    ]
+  },
+  {
+    "feature_id": "bnk.non_performing_loan_ratio",
+    "feature_name": "Non-Performing Loan Ratio",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Bad debt percentage; bank solvency threat.",
+    "state_space": "Continuous scalar representing percentage.",
+    "measurement": "Non-performing loans divided by total loans.",
+    "upstream_causes": [
+      "economic downturn",
+      "lending standards",
+      "credit bubbles"
+    ],
+    "downstream_effects": [
+      "bank losses",
+      "credit contraction"
+    ],
+    "interaction_rules": [
+      "economic downturn raises NPL",
+      "lax standards create NPL"
+    ],
+    "pathological_extremes": [
+      "100% NPL",
+      "bank failure"
+    ],
+    "real_world_validation": [
+      "NPL is bank health indicator"
+    ],
+    "implementation_notes": [
+      "NPL tracking"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "credit"
+    ]
+  },
+  {
+    "feature_id": "bnk.bank_run_dynamics",
+    "feature_name": "Bank Run Dynamics",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Self-fulfilling panic; Diamond-Dybvig model.",
+    "state_space": "Binary run state.",
+    "measurement": "Withdrawal rate and queue.",
+    "upstream_causes": [
+      "rumors",
+      "loss of confidence",
+      "insolvency rumors"
+    ],
+    "downstream_effects": [
+      "bank failure",
+      "contagion",
+      "financial crisis"
+    ],
+    "interaction_rules": [
+      "runs are self-fulfilling",
+      " deposit insurance prevents runs"
+    ],
+    "pathological_extremes": [
+      "complete bank failure",
+      "contagion to system"
+    ],
+    "real_world_validation": [
+      "bank runs are historical"
+    ],
+    "implementation_notes": [
+      "run monitoring"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "systemic"
+    ]
+  },
+  {
+    "feature_id": "bnk.deposit_insurance_limit",
+    "feature_name": "Deposit Insurance Limit",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Government guarantee; prevents runs up to limit.",
+    "state_space": "Continuous scalar representing limit.",
+    "measurement": "Regulatory guarantee amount.",
+    "upstream_causes": [
+      "government policy",
+      "funding"
+    ],
+    "downstream_effects": [
+      "run prevention",
+      "moral hazard"
+    ],
+    "interaction_rules": [
+      "insurance prevents runs",
+      "insurance creates moral hazard"
+    ],
+    "pathological_extremes": [
+      "insurance exhaustion",
+      "government default"
+    ],
+    "real_world_validation": [
+      "deposit insurance prevents runs"
+    ],
+    "implementation_notes": [
+      "insurance tracking"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "insurance"
+    ]
+  },
+  {
+    "feature_id": "bnk.too_big_to_fail_subsidy",
+    "feature_name": "Too Big To Fail Subsidy",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Implicit guarantee lowers borrowing costs; moral hazard.",
+    "state_space": "Continuous scalar representing subsidy.",
+    "measurement": "Funding cost advantage.",
+    "upstream_causes": [
+      "size",
+      "systemic importance",
+      "government guarantee"
+    ],
+    "downstream_effects": [
+      "lower funding costs",
+      "excessive risk taking"
+    ],
+    "interaction_rules": [
+      "TBTF lowers costs",
+      "TBTF encourages risk"
+    ],
+    "pathological_extremes": [
+      "massive failure",
+      "government liability"
+    ],
+    "real_world_validation": [
+      "TBTF is documented"
+    ],
+    "implementation_notes": [
+      "TBTF analysis"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "subsidy"
+    ]
+  },
+  {
+    "feature_id": "bnk.shadow_banking_leverage",
+    "feature_name": "Shadow Banking Leverage",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Off-balance-sheet exposure; systemic risk.",
+    "state_space": "Continuous scalar representing leverage.",
+    "measurement": "Total exposure to capital.",
+    "upstream_causes": [
+      "securitization",
+      "off-balance-sheet activities"
+    ],
+    "downstream_effects": [
+      "systemic risk",
+      "regulatory evasion"
+    ],
+    "interaction_rules": [
+      "shadow banking evades regulation",
+      "leverage amplifies losses"
+    ],
+    "pathological_extremes": [
+      "leverage collapse",
+      "regulatory discovery"
+    ],
+    "real_world_validation": [
+      "shadow banking is risk"
+    ],
+    "implementation_notes": [
+      "leverage tracking"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "shadow"
+    ]
+  },
+  {
+    "feature_id": "bnk.repo_haircut",
+    "feature_name": "Repo Haircut",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Collateral discount; increases in stress (GFC went to 100%).",
+    "state_space": "Continuous scalar representing percentage.",
+    "measurement": "Collateral value minus loan value.",
+    "upstream_causes": [
+      "collateral quality",
+      "market stress"
+    ],
+    "downstream_effects": [
+      "funding cost",
+      "liquidity"
+    ],
+    "interaction_rules": [
+      "higher haircuts in stress",
+      "haircuts can be extreme"
+    ],
+    "pathological_extremes": [
+      "100% haircut",
+      "no collateral accepted"
+    ],
+    "real_world_validation": [
+      "GFC had extreme haircuts"
+    ],
+    "implementation_notes": [
+      "haircut tracking"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "collateral"
+    ]
+  },
+  {
+    "feature_id": "bnk.libor_manipulation",
+    "feature_name": "LIBOR Manipulation",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Benchmark rate rigging; scandal and replacement.",
+    "state_space": "Binary manipulation state.",
+    "measurement": "Rate deviation analysis.",
+    "upstream_causes": [
+      "collusion",
+      "trader incentives"
+    ],
+    "downstream_effects": [
+      "benchmark integrity",
+      "legal risk"
+    ],
+    "interaction_rules": [
+      "manipulation affects trillions",
+      "manipulation was widespread"
+    ],
+    "pathological_extremes": [
+      "complete trust loss",
+      "replacement required"
+    ],
+    "real_world_validation": [
+      "LIBOR manipulation was scandal"
+    ],
+    "implementation_notes": [
+      "surveillance"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "fraud"
+    ]
+  },
+  {
+    "feature_id": "bnk.negative_interest_rates",
+    "feature_name": "Negative Interest Rates",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Central bank charges deposits; bank profitability squeeze.",
+    "state_space": "Binary negative rate state.",
+    "measurement": "Policy rate below zero.",
+    "upstream_causes": [
+      "deflation",
+      "economic weakness"
+    ],
+    "downstream_effects": [
+      "bank profitability",
+      "cash holding"
+    ],
+    "interaction_rules": [
+      "negative rates punish banks",
+      "negative rates encourage lending"
+    ],
+    "pathological_extremes": [
+      "bank profitability collapse",
+      "cash hoarding"
+    ],
+    "real_world_validation": [
+      "negative rates used in Europe"
+    ],
+    "implementation_notes": [
+      "policy tracking"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "monetary"
+    ]
+  },
+  {
+    "feature_id": "bnk.yield_curve_inversion",
+    "feature_name": "Yield Curve Inversion",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Short rates above long; recession predictor.",
+    "state_space": "Binary inversion state.",
+    "measurement": "Short minus long rate.",
+    "upstream_causes": [
+      " Fed policy",
+      "inflation expectations"
+    ],
+    "downstream_effects": [
+      "recession",
+      "bank profitability"
+    ],
+    "interaction_rules": [
+      "inversion predicts recession",
+      "inversion flattens bank profits"
+    ],
+    "pathological_extremes": [
+      "deep inversion",
+      "inversion persists"
+    ],
+    "real_world_validation": [
+      "inversion predicted recessions"
+    ],
+    "implementation_notes": [
+      "yield curve monitoring"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "recession"
+    ]
+  },
+  {
+    "feature_id": "bnk.term_spread",
+    "feature_name": "Term Spread",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "10-year minus 2-year Treasury; strongest recession signal.",
+    "state_space": "Continuous scalar representing spread.",
+    "measurement": "Long minus short rate.",
+    "upstream_causes": [
+      "inflation expectations",
+      "Fed policy"
+    ],
+    "downstream_effects": [
+      "recession probability",
+      "banking conditions"
+    ],
+    "interaction_rules": [
+      "wide term spread positive",
+      "negative spread negative"
+    ],
+    "pathological_extremes": [
+      "deep negative spread",
+      "inversion persistence"
+    ],
+    "real_world_validation": [
+      "term spread is recession predictor"
+    ],
+    "implementation_notes": [
+      "spread monitoring"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "recession"
+    ]
+  },
+  {
+    "feature_id": "bnk.credit_crunch_transmission",
+    "feature_name": "Credit Crunch Transmission",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Banks stop lending leads to business investment fall leads to recession.",
+    "state_space": "Binary crunch state.",
+    "measurement": "Lending contraction analysis.",
+    "upstream_causes": [
+      "bank losses",
+      "capital shortage",
+      "fear"
+    ],
+    "downstream_effects": [
+      "investment fall",
+      "recession"
+    ],
+    "interaction_rules": [
+      "credit crunch spreads",
+      "crunch reduces GDP"
+    ],
+    "pathological_extremes": [
+      "depression",
+      "no credit"
+    ],
+    "real_world_validation": [
+      "2008 had credit crunch"
+    ],
+    "implementation_notes": [
+      "credit monitoring"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "credit"
+    ]
+  },
+  {
+    "feature_id": "bnk.zombie_firm_proliferation",
+    "feature_name": "Zombie Firm Proliferation",
+    "domain": "Economic",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Kept alive by cheap credit; productivity drag.",
+    "state_space": "Continuous scalar representing zombie share.",
+    "measurement": "Zombie firm count divided by total.",
+    "upstream_causes": [
+      "low interest rates",
+      "forbearance",
+      "banking sector weakness"
+    ],
+    "downstream_effects": [
+      "productivity drag",
+      "resource misallocation"
+    ],
+    "interaction_rules": [
+      "cheap credit keeps zombies alive",
+      "zombies crowd out healthy firms"
+    ],
+    "pathological_extremes": [
+      "zombie takeovers",
+      "productivity collapse"
+    ],
+    "real_world_validation": [
+      "zombies are documented phenomenon"
+    ],
+    "implementation_notes": [
+      "zombie tracking"
+    ],
+    "tags": [
+      "economy",
+      "banking",
+      "productivity"
+    ]
+  },
+  {
+    "feature_id": "pol.monopoly_on_violence",
+    "feature_name": "Monopoly on Violence",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Directly measurable",
+    "reversibility": "Irreversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Weber's definition; contested in failed states.",
+    "state_space": "Binary: monopoly or contested.",
+    "measurement": "State control assessment.",
+    "upstream_causes": [
+      "state capacity",
+      "military power"
+    ],
+    "downstream_effects": [
+      "state legitimacy",
+      "order"
+    ],
+    "interaction_rules": [
+      "monopoly means order",
+      "contested means conflict"
+    ],
+    "pathological_extremes": [
+      "failed state",
+      "civil war"
+    ],
+    "real_world_validation": [
+      "monopoly on violence defines state"
+    ],
+    "implementation_notes": [
+      "state capacity tracking"
+    ],
+    "tags": [
+      "political",
+      "state",
+      "violence"
+    ]
+  },
+  {
+    "feature_id": "pol.territorial_control_percentage",
+    "feature_name": "Territorial Control Percentage",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Government vs. rebel/terrorist control; Syria example.",
+    "state_space": "Continuous scalar representing percentage.",
+    "measurement": "Controlled territory.",
+    "upstream_causes": [
+      "military capacity",
+      "insurgency"
+    ],
+    "downstream_effects": [
+      "legitimacy",
+      "revenue"
+    ],
+    "interaction_rules": [
+      "more territory more power",
+      "contested territory creates instability"
+    ],
+    "pathological_extremes": [
+      "total loss",
+      "complete fragmentation"
+    ],
+    "real_world_validation": [
+      "territorial control is key"
+    ],
+    "implementation_notes": [
+      "territorial tracking"
+    ],
+    "tags": [
+      "political",
+      "state",
+      "territory"
+    ]
+  },
+  {
+    "feature_id": "pol.tax_extraction_efficiency",
+    "feature_name": "Tax Extraction Efficiency",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Actual vs. potential revenue; fiscal capacity.",
+    "state_space": "Continuous scalar representing efficiency.",
+    "measurement": "Actual over potential revenue.",
+    "upstream_causes": [
+      "bureaucratic capacity",
+      "economy"
+    ],
+    "downstream_effects": [
+      "fiscal capacity",
+      "service provision"
+    ],
+    "interaction_rules": [
+      "efficient extraction funds state",
+      "inefficiency limits state"
+    ],
+    "pathological_extremes": [
+      "no extraction",
+      "revolution"
+    ],
+    "real_world_validation": [
+      "tax capacity predicts development"
+    ],
+    "implementation_notes": [
+      "tax tracking"
+    ],
+    "tags": [
+      "political",
+      "fiscal",
+      "tax"
+    ]
+  },
+  {
+    "feature_id": "pol.bureaucratic_quality",
+    "feature_name": "Bureaucratic Quality",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Meritocracy vs. patronage; predicts development.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Civil service quality.",
+    "upstream_causes": [
+      "selection",
+      "training",
+      "pay"
+    ],
+    "downstream_effects": [
+      "service quality",
+      "corruption"
+    ],
+    "interaction_rules": [
+      "meritocracy improves quality",
+      "patronage reduces quality"
+    ],
+    "pathological_extremes": [
+      "complete patronage",
+      "state collapse"
+    ],
+    "real_world_validation": [
+      "bureaucratic quality predicts growth"
+    ],
+    "implementation_notes": [
+      "bureaucracy tracking"
+    ],
+    "tags": [
+      "political",
+      "bureaucracy",
+      "merit"
+    ]
+  },
+  {
+    "feature_id": "pol.rule_of_law_index",
+    "feature_name": "Rule of Law Index",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Contract enforcement, property rights, judicial independence.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "World Bank governance indicators.",
+    "upstream_causes": [
+      "judicial capacity",
+      "legal framework"
+    ],
+    "downstream_effects": [
+      "investment",
+      "development"
+    ],
+    "interaction_rules": [
+      "strong rule of law enables growth",
+      "weak rule of law discourages investment"
+    ],
+    "pathological_extremes": [
+      "arbitrary law",
+      "no enforcement"
+    ],
+    "real_world_validation": [
+      "rule of law enables development"
+    ],
+    "implementation_notes": [
+      "governance tracking"
+    ],
+    "tags": [
+      "political",
+      "law",
+      "institution"
+    ]
+  },
+  {
+    "feature_id": "pol.corruption_perceptions",
+    "feature_name": "Corruption Perceptions",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Transparency International; self-fulfilling expectations.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Corruption perceptions index.",
+    "upstream_causes": [
+      "actual corruption",
+      "enforcement"
+    ],
+    "downstream_effects": [
+      "investment",
+      "trust"
+    ],
+    "interaction_rules": [
+      "high corruption discourages investment",
+      "enforcement reduces corruption"
+    ],
+    "pathological_extremes": [
+      "complete corruption",
+      "systemic bribery"
+    ],
+    "real_world_validation": [
+      "corruption perceptions matter"
+    ],
+    "implementation_notes": [
+      "corruption tracking"
+    ],
+    "tags": [
+      "political",
+      "corruption",
+      "trust"
+    ]
+  },
+  {
+    "feature_id": "pol.regulatory_quality",
+    "feature_name": "Regulatory Quality",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Market-friendly regulation; not captured by incumbents.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Regulatory burden assessment.",
+    "upstream_causes": [
+      "legislative capacity",
+      "lobbying"
+    ],
+    "downstream_effects": [
+      "business formation",
+      "investment"
+    ],
+    "interaction_rules": [
+      "light regulation enables business",
+      "heavy regulation discourages business"
+    ],
+    "pathological_extremes": [
+      "completeregulation",
+      "capture"
+    ],
+    "real_world_validation": [
+      "regulation affects business climate"
+    ],
+    "implementation_notes": [
+      "regulation tracking"
+    ],
+    "tags": [
+      "political",
+      "regulation",
+      "business"
+    ]
+  },
+  {
+    "feature_id": "pol.government_effectiveness",
+    "feature_name": "Government Effectiveness",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Policy implementation quality; not just intention.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Implementation success rate.",
+    "upstream_causes": [
+      "bureaucratic capacity",
+      "resources"
+    ],
+    "downstream_effects": [
+      "outcomes",
+      "citizen satisfaction"
+    ],
+    "interaction_rules": [
+      "effective government delivers",
+      "ineffective government fails"
+    ],
+    "pathological_extremes": [
+      "complete failure",
+      "state collapse"
+    ],
+    "real_world_validation": [
+      "effective government delivers services"
+    ],
+    "implementation_notes": [
+      "effectiveness tracking"
+    ],
+    "tags": [
+      "political",
+      "effectiveness",
+      "delivery"
+    ]
+  },
+  {
+    "feature_id": "pol.political_stability",
+    "feature_name": "Political Stability",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "No violence or unconstitutional change; investor preference.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Stability indicators.",
+    "upstream_causes": [
+      "conflict",
+      "institutional strength"
+    ],
+    "downstream_effects": [
+      "investment",
+      "development"
+    ],
+    "interaction_rules": [
+      "stable politics enables investment",
+      "instability discourages investment"
+    ],
+    "pathological_extremes": [
+      "civil war",
+      "coup"
+    ],
+    "real_world_validation": [
+      "stability enables development"
+    ],
+    "implementation_notes": [
+      "stability tracking"
+    ],
+    "tags": [
+      "political",
+      "stability",
+      "investor"
+    ]
+  },
+  {
+    "feature_id": "pol.voice_accountability",
+    "feature_name": "Voice and Accountability",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Democratic participation; human rights protection.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Voice and accountability index.",
+    "upstream_causes": [
+      "democratic institutions",
+      "civil society"
+    ],
+    "downstream_effects": [
+      "rights protection",
+      "government responsiveness"
+    ],
+    "interaction_rules": [
+      "voice ensures accountability",
+      "no voice means authoritarian"
+    ],
+    "pathological_extremes": [
+      "complete authoritarianism",
+      "no rights"
+    ],
+    "real_world_validation": [
+      "voice enables accountability"
+    ],
+    "implementation_notes": [
+      "voice tracking"
+    ],
+    "tags": [
+      "political",
+      "voice",
+      "democracy"
+    ]
+  },
+  {
+    "feature_id": "pol.legitimacy_source",
+    "feature_name": "Legitimacy Source",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Traditional, charismatic, legal-rational (Weber).",
+    "state_space": "Categorical: traditional, charismatic, legal-rational.",
+    "measurement": "Legitimacy source analysis.",
+    "upstream_causes": [
+      "history",
+      "leadership",
+      "institutions"
+    ],
+    "downstream_effects": [
+      "compliance",
+      "stability"
+    ],
+    "interaction_rules": [
+      "each source provides legitimacy",
+      "sources can conflict"
+    ],
+    "pathological_extremes": [
+      "complete illegitimacy",
+      "succession crisis"
+    ],
+    "real_world_validation": [
+      "legitimacy sources defined by Weber"
+    ],
+    "implementation_notes": [
+      "legitimacy tracking"
+    ],
+    "tags": [
+      "political",
+      "legitimacy",
+      "Weber"
+    ]
+  },
+  {
+    "feature_id": "pol.performance_legitimacy",
+    "feature_name": "Performance Legitimacy",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Economic growth buys compliance; China model.",
+    "state_space": "Continuous scalar representing compliance.",
+    "measurement": "Growth and compliance correlation.",
+    "upstream_causes": [
+      "economic performance",
+      "delivery"
+    ],
+    "downstream_effects": [
+      "compliance",
+      "support"
+    ],
+    "interaction_rules": [
+      "growth buys legitimacy",
+      "poor performance loses legitimacy"
+    ],
+    "pathological_extremes": [
+      "growth collapse",
+      "complete illegitimacy"
+    ],
+    "real_world_validation": [
+      "performance builds legitimacy"
+    ],
+    "implementation_notes": [
+      "performance tracking"
+    ],
+    "tags": [
+      "political",
+      "legitimacy",
+      "performance"
+    ]
+  },
+  {
+    "feature_id": "pol.nationalist_narrative_strength",
+    "feature_name": "Nationalist Narrative Strength",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Shared identity; external threat amplifies.",
+    "state_space": "Continuous scalar representing strength.",
+    "measurement": "Narrative penetration analysis.",
+    "upstream_causes": [
+      "history",
+      "education",
+      "media"
+    ],
+    "downstream_effects": [
+      "mobilization",
+      "support"
+    ],
+    "interaction_rules": [
+      "narrative builds cohesion",
+      "external threat amplifies narrative"
+    ],
+    "pathological_extremes": [
+      "narrative collapse",
+      "factionalism"
+    ],
+    "real_world_validation": [
+      "nationalism mobilizes"
+    ],
+    "implementation_notes": [
+      "narrative tracking"
+    ],
+    "tags": [
+      "political",
+      "nationalism",
+      "identity"
+    ]
+  },
+  {
+    "feature_id": "pol.divine_right_claims",
+    "feature_name": "Divine Right Claims",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Religious sanction; monarchies and theocracies.",
+    "state_space": "Binary: divine right claimed.",
+    "measurement": "Religious endorsement analysis.",
+    "upstream_causes": [
+      "religious authority",
+      "tradition"
+    ],
+    "downstream_effects": [
+      "legitimacy",
+      "obedience"
+    ],
+    "interaction_rules": [
+      "divine right provides legitimacy",
+      "secularization undermines it"
+    ],
+    "pathological_extremes": [
+      "complete secularization",
+      "religious collapse"
+    ],
+    "real_world_validation": [
+      "divine right was historical"
+    ],
+    "implementation_notes": [
+      "divine right tracking"
+    ],
+    "tags": [
+      "political",
+      "divine",
+      "religion"
+    ]
+  },
+  {
+    "feature_id": "pol.mandate_of_heaven",
+    "feature_name": "Mandate of Heaven",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Irreversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Chinese cyclical legitimacy; natural disasters as withdrawal sign.",
+    "state_space": "Binary: mandate held or lost.",
+    "measurement": "Disaster frequency analysis.",
+    "upstream_causes": [
+      "natural disasters",
+      "performance"
+    ],
+    "downstream_effects": [
+      "rebellion",
+      "dynastic change"
+    ],
+    "interaction_rules": [
+      "disasters signal mandate loss",
+      "recovery restores mandate"
+    ],
+    "pathological_extremes": [
+      "complete mandate loss",
+      "dynastic collapse"
+    ],
+    "real_world_validation": [
+      "mandate of heaven is historical"
+    ],
+    "implementation_notes": [
+      "mandate tracking"
+    ],
+    "tags": [
+      "political",
+      "mandate",
+      "China"
+    ]
+  },
+  {
+    "feature_id": "pol.social_contract_perception",
+    "feature_name": "Social Contract Perception",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Citizens' view of fairness; Rousseau vs. reality.",
+    "state_space": "Continuous scalar representing perception.",
+    "measurement": "Survey data.",
+    "upstream_causes": [
+      "actual contract",
+      "delivery"
+    ],
+    "downstream_effects": [
+      "compliance",
+      "revolution risk"
+    ],
+    "interaction_rules": [
+      "fair perception builds compliance",
+      "unfair perception sows revolt"
+    ],
+    "pathological_extremes": [
+      "complete unfairness",
+      "revolution"
+    ],
+    "real_world_validation": [
+      "social contract is theory"
+    ],
+    "implementation_notes": [
+      "perception tracking"
+    ],
+    "tags": [
+      "political",
+      "contract",
+      "fairness"
+    ]
+  },
+  {
+    "feature_id": "pol.consent_governed",
+    "feature_name": "Consent of the Governed",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Election turnout and satisfaction; not just voting.",
+    "state_space": "Continuous scalar representing consent.",
+    "measurement": "Turnout and survey data.",
+    "upstream_causes": [
+      "elections",
+      "satisfaction"
+    ],
+    "downstream_effects": [
+      "compliance",
+      "stability"
+    ],
+    "interaction_rules": [
+      "high consent means stability",
+      "low consent means instability"
+    ],
+    "pathological_extremes": [
+      "complete rejection",
+      "revolution"
+    ],
+    "real_world_validation": [
+      "consent is democratic foundation"
+    ],
+    "implementation_notes": [
+      "consent tracking"
+    ],
+    "tags": [
+      "political",
+      "consent",
+      "democracy"
+    ]
+  },
+  {
+    "feature_id": "pol.revolutionary_potential",
+    "feature_name": "Revolutionary Potential",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Relative deprivation plus mobilization plus opportunity.",
+    "state_space": "Continuous scalar representing potential.",
+    "measurement": "Mobilization indicators.",
+    "upstream_causes": [
+      "grievances",
+      "leadership",
+      "opportunity"
+    ],
+    "downstream_effects": [
+      "revolution",
+      "repression"
+    ],
+    "interaction_rules": [
+      "all three factors needed",
+      "any missing prevents revolution"
+    ],
+    "pathological_extremes": [
+      "revolution success",
+      "total repression"
+    ],
+    "real_world_validation": [
+      "revolution requires combination"
+    ],
+    "implementation_notes": [
+      "potential tracking"
+    ],
+    "tags": [
+      "political",
+      "revolution",
+      "risk"
+    ]
+  },
+  {
+    "feature_id": "pol.coup_proofing_investment",
+    "feature_name": "Coup-Proofing Investment",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Parallel military structures; reduces coup risk but effectiveness.",
+    "state_space": "Continuous scalar representing investment.",
+    "measurement": "Parallel force deployment.",
+    "upstream_causes": [
+      "resource allocation",
+      "paranoia"
+    ],
+    "downstream_effects": [
+      "coup resistance",
+      "military effectiveness"
+    ],
+    "interaction_rules": [
+      "coup-proofing reduces coup risk",
+      "coup-proofing reduces effectiveness"
+    ],
+    "pathological_extremes": [
+      "coup",
+      "military fragmentation"
+    ],
+    "real_world_validation": [
+      "coup-proofing is documented"
+    ],
+    "implementation_notes": [
+      "coup-proofing tracking"
+    ],
+    "tags": [
+      "political",
+      "coup",
+      "military"
+    ]
+  },
+  {
+    "feature_id": "pol.clientelism_network_density",
+    "feature_name": "Clientelism Network Density",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Patronage distribution; vote buying and loyalty.",
+    "state_space": "Continuous scalar representing density.",
+    "measurement": "Network analysis.",
+    "upstream_causes": [
+      "resources",
+      "patronage opportunities"
+    ],
+    "downstream_effects": [
+      "loyalty",
+      "corruption"
+    ],
+    "interaction_rules": [
+      "dense networks build loyalty",
+      "dense networks enable corruption"
+    ],
+    "pathological_extremes": [
+      "complete clientelism",
+      "network collapse"
+    ],
+    "real_world_validation": [
+      "clientelism is historical"
+    ],
+    "implementation_notes": [
+      "network tracking"
+    ],
+    "tags": [
+      "political",
+      "clientelism",
+      "patronage"
+    ]
+  },
+  {
+    "feature_id": "dem.electoral_system_type",
+    "feature_name": "Electoral System Type",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "FPTP, proportional, mixed; shapes party system.",
+    "state_space": "Categorical: FPTP, proportional, mixed.",
+    "measurement": "Electoral system classification.",
+    "upstream_causes": [
+      "history",
+      "constitutional design"
+    ],
+    "downstream_effects": [
+      "party system",
+      "representation"
+    ],
+    "interaction_rules": [
+      "FPTP creates two parties",
+      "proportional creates many parties"
+    ],
+    "pathological_extremes": [
+      "no representation",
+      "fragmentation"
+    ],
+    "real_world_validation": [
+      "electoral systems shape politics"
+    ],
+    "implementation_notes": [
+      "system tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "electoral"
+    ]
+  },
+  {
+    "feature_id": "dem.district_gerrymandering",
+    "feature_name": "District Gerrymandering",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Boundary manipulation; efficiency gap measure.",
+    "state_space": "Continuous scalar representing rigging.",
+    "measurement": "Efficiency gap calculation.",
+    "upstream_causes": [
+      "redistricting control",
+      "data access"
+    ],
+    "downstream_effects": [
+      "election outcomes",
+      "representation"
+    ],
+    "interaction_rules": [
+      "gerrymandering favors incumbents",
+      "packing and cracking"
+    ],
+    "pathological_extremes": [
+      "complete rigging",
+      "no competitive districts"
+    ],
+    "real_world_validation": [
+      "gerrymandering is historical"
+    ],
+    "implementation_notes": [
+      "gerrymandering tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "districting"
+    ]
+  },
+  {
+    "feature_id": "dem.voter_suppression_tactics",
+    "feature_name": "Voter Suppression Tactics",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "ID laws, polling place reduction, felon disenfranchisement.",
+    "state_space": "Binary: suppression present or absent.",
+    "measurement": "Suppression policies.",
+    "upstream_causes": [
+      "political motivation",
+      "legal framework"
+    ],
+    "downstream_effects": [
+      "voter turnout",
+      "representation"
+    ],
+    "interaction_rules": [
+      "suppression reduces turnout",
+      "suppression affects outcomes"
+    ],
+    "pathological_extremes": [
+      "complete suppression",
+      "no voting"
+    ],
+    "real_world_validation": [
+      "voter suppression is documented"
+    ],
+    "implementation_notes": [
+      "suppression tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "suppression"
+    ]
+  },
+  {
+    "feature_id": "dem.campaign_finance_rules",
+    "feature_name": "Campaign Finance Rules",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Contribution limits; Citizens United effect.",
+    "state_space": "Categorical: restricted, unlimited.",
+    "measurement": "Finance regulation.",
+    "upstream_causes": [
+      "court decisions",
+      "legislation"
+    ],
+    "downstream_effects": [
+      "campaign spending",
+      "candidate access"
+    ],
+    "interaction_rules": [
+      "limits restrict money",
+      "unlimited favors rich"
+    ],
+    "pathological_extremes": [
+      "complete corruption",
+      "no competition"
+    ],
+    "real_world_validation": [
+      "campaign finance affects elections"
+    ],
+    "implementation_notes": [
+      "finance tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "finance"
+    ]
+  },
+  {
+    "feature_id": "dem.pac",
+    "feature_name": "Political Action Committee (PAC)",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Money aggregation; super PAC unlimited.",
+    "state_space": "Continuous scalar representing funds.",
+    "measurement": "PAC spending.",
+    "upstream_causes": [
+      "donors",
+      "organizations"
+    ],
+    "downstream_effects": [
+      "campaign spending",
+      "influence"
+    ],
+    "interaction_rules": [
+      "PACs aggregate money",
+      "PACs increase influence"
+    ],
+    "pathological_extremes": [
+      "PAC dominance",
+      "complete capture"
+    ],
+    "real_world_validation": [
+      "PACs are major players"
+    ],
+    "implementation_notes": [
+      "PAC tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "PAC"
+    ]
+  },
+  {
+    "feature_id": "dem.lobbying_expenditure",
+    "feature_name": "Lobbying Expenditure",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Industry influence; revolving door effect.",
+    "state_space": "Continuous scalar representing expenditure.",
+    "measurement": "Lobbying spending.",
+    "upstream_causes": [
+      "industry interests",
+      "access"
+    ],
+    "downstream_effects": [
+      "policy influence",
+      "regulation"
+    ],
+    "interaction_rules": [
+      "lobbying influences policy",
+      "revolving door enables access"
+    ],
+    "pathological_extremes": [
+      "complete capture",
+      "regulatory capture"
+    ],
+    "real_world_validation": [
+      "lobbying is major influence"
+    ],
+    "implementation_notes": [
+      "lobbying tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "lobbying"
+    ]
+  },
+  {
+    "feature_id": "dem.astroturfing",
+    "feature_name": "Astroturfing",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Fake grassroots movement; corporate funded.",
+    "state_space": "Binary: astroturf detected.",
+    "measurement": "Movement analysis.",
+    "upstream_causes": [
+      "funding",
+      "coordination"
+    ],
+    "downstream_effects": [
+      "public opinion",
+      "policy"
+    ],
+    "interaction_rules": [
+      "astroturf creates false appearance",
+      "detection is possible"
+    ],
+    "pathological_extremes": [
+      "widespread astroturf",
+      "no authentic movements"
+    ],
+    "real_world_validation": [
+      "astroturfing is documented"
+    ],
+    "implementation_notes": [
+      "astroturf detection"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "fake"
+    ]
+  },
+  {
+    "feature_id": "dem.primary_election_dynamics",
+    "feature_name": "Primary Election Dynamics",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Base vs. general electorate; extremism incentive.",
+    "state_space": "Continuous scalar representing extremism.",
+    "measurement": "Primary results analysis.",
+    "upstream_causes": [
+      "voter composition",
+      " turnout"
+    ],
+    "downstream_effects": [
+      "candidate selection",
+      "general election"
+    ],
+    "interaction_rules": [
+      "primary favors extremes",
+      "general favors moderates"
+    ],
+    "pathological_extremes": [
+      "complete extremism",
+      "no general electability"
+    ],
+    "real_world_validation": [
+      "primaries affect candidate quality"
+    ],
+    "implementation_notes": [
+      "primary tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "primary"
+    ]
+  },
+  {
+    "feature_id": "dem.coalition_government_formation",
+    "feature_name": "Coalition Government Formation",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Multi-party bargaining; policy compromise.",
+    "state_space": "Binary: coalition formed or not.",
+    "measurement": "Coalition formation process.",
+    "upstream_causes": [
+      "election results",
+      "party positions"
+    ],
+    "downstream_effects": [
+      "government formation",
+      "policy"
+    ],
+    "interaction_rules": [
+      "coalitions require bargaining",
+      "coalitions create compromise"
+    ],
+    "pathological_extremes": [
+      "no coalition possible",
+      "unstable coalition"
+    ],
+    "real_world_validation": [
+      "coalitions are common"
+    ],
+    "implementation_notes": [
+      "coalition tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "coalition"
+    ]
+  },
+  {
+    "feature_id": "dem.hung_parliament_gridlock",
+    "feature_name": "Hung Parliament/Gridlock",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "No majority; policy stagnation or crisis response.",
+    "state_space": "Binary: gridlock or functioning.",
+    "measurement": "Legislation output.",
+    "upstream_causes": [
+      "election results",
+      "polarization"
+    ],
+    "downstream_effects": [
+      "policy output",
+      "stability"
+    ],
+    "interaction_rules": [
+      "gridlock stops policy",
+      "gridlock can enable crisis response"
+    ],
+    "pathological_extremes": [
+      "complete gridlock",
+      "government collapse"
+    ],
+    "real_world_validation": [
+      "gridlock is common"
+    ],
+    "implementation_notes": [
+      "gridlock tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "gridlock"
+    ]
+  },
+  {
+    "feature_id": "dem.impeachment_process",
+    "feature_name": "Impeachment Process",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Political, not criminal; partisan threshold.",
+    "state_space": "Binary: impeachment ongoing or not.",
+    "measurement": "Impeachment process.",
+    "upstream_causes": [
+      "allegations",
+      "political will"
+    ],
+    "downstream_effects": [
+      "removal",
+      "political crisis"
+    ],
+    "interaction_rules": [
+      "impeachment is political",
+      "partisanship matters"
+    ],
+    "pathological_extremes": [
+      "no removal despite impeachment",
+      "attempted coup"
+    ],
+    "real_world_validation": [
+      "impeachment is constitutional tool"
+    ],
+    "implementation_notes": [
+      "impeachment tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "impeachment"
+    ]
+  },
+  {
+    "feature_id": "dem.judicial_review_power",
+    "feature_name": "Judicial Review Power",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Courts overturn legislation; Marbury v. Madison.",
+    "state_space": "Continuous scalar representing power.",
+    "measurement": "Courts overturned laws.",
+    "upstream_causes": [
+      "constitutional design",
+      "court composition"
+    ],
+    "downstream_effects": [
+      "legislation",
+      "rights"
+    ],
+    "interaction_rules": [
+      "judicial review checks government",
+      "courts can be overruled"
+    ],
+    "pathological_extremes": [
+      "court capture",
+      "judicial supremacy"
+    ],
+    "real_world_validation": [
+      "judicial review is key power"
+    ],
+    "implementation_notes": [
+      "review tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "courts"
+    ]
+  },
+  {
+    "feature_id": "dem.federalism_degree",
+    "feature_name": "Federalism Degree",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Central vs. state power; policy experimentation.",
+    "state_space": "Continuous scalar from centralized to federal.",
+    "measurement": "Power distribution.",
+    "upstream_causes": [
+      "constitution",
+      "history"
+    ],
+    "downstream_effects": [
+      "policy variation",
+      "innovation"
+    ],
+    "interaction_rules": [
+      "federalism enables experiments",
+      "centralization enables coordination"
+    ],
+    "pathological_extremes": [
+      "complete centralization",
+      "confederation collapse"
+    ],
+    "real_world_validation": [
+      "federalism varies by country"
+    ],
+    "implementation_notes": [
+      "federalism tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "federal"
+    ]
+  },
+  {
+    "feature_id": "dem.devolution",
+    "feature_name": "Devolution",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Power transfer to regions; Scotland, Catalonia demands.",
+    "state_space": "Binary: devolution present or absent.",
+    "measurement": "Devolution scope.",
+    "upstream_causes": [
+      "demands",
+      "political calculations"
+    ],
+    "downstream_effects": [
+      "regional power",
+      "national unity"
+    ],
+    "interaction_rules": [
+      "devolution satisfies demands",
+      "devolution can encourage more"
+    ],
+    "pathological_extremes": [
+      "independence",
+      "complete centralization"
+    ],
+    "real_world_validation": [
+      "devolution is real"
+    ],
+    "implementation_notes": [
+      "devolution tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "devolution"
+    ]
+  },
+  {
+    "feature_id": "dem.direct_democracy_tools",
+    "feature_name": "Direct Democracy Tools",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Referendum, initiative, recall; California Proposition 13.",
+    "state_space": "Binary: tools present or absent.",
+    "measurement": "Direct democracy usage.",
+    "upstream_causes": [
+      "legal framework",
+      "citizen demands"
+    ],
+    "downstream_effects": [
+      "policy",
+      "representation"
+    ],
+    "interaction_rules": [
+      "direct democracy bypasses representatives",
+      "direct democracy can be populist"
+    ],
+    "pathological_extremes": [
+      "tyranny of majority",
+      "abuse of tools"
+    ],
+    "real_world_validation": [
+      "direct democracy exists"
+    ],
+    "implementation_notes": [
+      "tools tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "direct"
+    ]
+  },
+  {
+    "feature_id": "dem.civic_education_level",
+    "feature_name": "Civic Education Level",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Political knowledge; affects democratic quality.",
+    "state_space": "Continuous scalar representing knowledge.",
+    "measurement": "Civic test scores.",
+    "upstream_causes": [
+      "education system",
+      "media"
+    ],
+    "downstream_effects": [
+      "participation",
+      "quality"
+    ],
+    "interaction_rules": [
+      "civic education improves participation",
+      "poor education reduces quality"
+    ],
+    "pathological_extremes": [
+      "complete ignorance",
+      "civic collapse"
+    ],
+    "real_world_validation": [
+      "civic knowledge matters"
+    ],
+    "implementation_notes": [
+      "education tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "education"
+    ]
+  },
+  {
+    "feature_id": "dem.polarization_index",
+    "feature_name": "Polarization Index",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Distance between party medians; affective vs. ideological.",
+    "state_space": "Continuous scalar representing distance.",
+    "measurement": "Party platform distance.",
+    "upstream_causes": [
+      "media",
+      "leadership",
+      "sorting"
+    ],
+    "downstream_effects": [
+      "gridlock",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "polarization increases conflict",
+      "polarization makes compromise hard"
+    ],
+    "pathological_extremes": [
+      "complete polarization",
+      "violence"
+    ],
+    "real_world_validation": [
+      "polarization is increasing"
+    ],
+    "implementation_notes": [
+      "polarization tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "polarization"
+    ]
+  },
+  {
+    "feature_id": "dem.negative_partisanship",
+    "feature_name": "Negative Partisanship",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Hating other side more than liking own; primary driver.",
+    "state_space": "Continuous scalar representing negativity.",
+    "measurement": "Survey data.",
+    "upstream_causes": [
+      "polarization",
+      "identity"
+    ],
+    "downstream_effects": [
+      "voting",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "negative partisanship drives turnout",
+      "negative partisanship increases conflict"
+    ],
+    "pathological_extremes": [
+      "complete hatred",
+      "violence"
+    ],
+    "real_world_validation": [
+      "negative partisanship is rising"
+    ],
+    "implementation_notes": [
+      "partisanship tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "partisanship"
+    ]
+  },
+  {
+    "feature_id": "dem.populist_appeal",
+    "feature_name": "Populist Appeal",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "'Pure people' vs. 'corrupt elite'; charismatic leader.",
+    "state_space": "Continuous scalar representing appeal.",
+    "measurement": "Populist messaging analysis.",
+    "upstream_causes": [
+      "grievances",
+      "leadership",
+      "media"
+    ],
+    "downstream_effects": [
+      "election success",
+      "polarization"
+    ],
+    "interaction_rules": [
+      "populism exploits grievances",
+      "populism divides"
+    ],
+    "pathological_extremes": [
+      "populist authoritarianism",
+      "complete polarization"
+    ],
+    "real_world_validation": [
+      "populism is rising globally"
+    ],
+    "implementation_notes": [
+      "populism tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "populism"
+    ]
+  },
+  {
+    "feature_id": "dem.authoritarian_reversion_risk",
+    "feature_name": "Authoritarian Reversion Risk",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Irreversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Democratic backsliding; Hungary, Turkey examples.",
+    "state_space": "Continuous scalar representing risk.",
+    "measurement": "Democratic backsliding indicators",
+    "upstream_causes": [
+      "populism",
+      "polarization",
+      "institutional capture"
+    ],
+    "downstream_effects": [
+      "authoritarianism",
+      "rights loss"
+    ],
+    "interaction_rules": [
+      "backsliding is incremental",
+      "backsliding can become permanent"
+    ],
+    "pathological_extremes": [
+      "complete authoritarianism",
+      "no return to democracy"
+    ],
+    "real_world_validation": [
+      "backsliding is documented"
+    ],
+    "implementation_notes": [
+      "backsliding tracking"
+    ],
+    "tags": [
+      "political",
+      "democracy",
+      "authoritarian"
+    ]
+  },
+  {
+    "feature_id": "int.balance_of_power",
+    "feature_name": "Balance of Power",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "No single dominant state; alliance formation.",
+    "state_space": "Continuous scalar representing balance.",
+    "measurement": "Power distribution analysis.",
+    "upstream_causes": [
+      "capabilities",
+      "alliances"
+    ],
+    "downstream_effects": [
+      "stability",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "balance deters aggression",
+      "imbalance encourages challenge"
+    ],
+    "pathological_extremes": [
+      "hegemony",
+      "complete multipolarity"
+    ],
+    "real_world_validation": [
+      "balance of power is theory"
+    ],
+    "implementation_notes": [
+      "power analysis"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "power"
+    ]
+  },
+  {
+    "feature_id": "int.hegemonic_stability",
+    "feature_name": "Hegemonic Stability",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Single power provides public goods; British then American.",
+    "state_space": "Binary: hegemonic order or not.",
+    "measurement": "Hegemon presence.",
+    "upstream_causes": [
+      "capability",
+      "will"
+    ],
+    "downstream_effects": [
+      "stability",
+      "order"
+    ],
+    "interaction_rules": [
+      "hegemon provides public goods",
+      "hegemon extracts costs"
+    ],
+    "pathological_extremes": [
+      "hegemon decline",
+      "power vacuum"
+    ],
+    "real_world_validation": [
+      "hegemonic stability is theory"
+    ],
+    "implementation_notes": [
+      "hegemony analysis"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "hegemony"
+    ]
+  },
+  {
+    "feature_id": "int.security_dilemma",
+    "feature_name": "Security Dilemma",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Defensive buildup seen as threat; arms race spiral.",
+    "state_space": "Binary: dilemma active or not.",
+    "measurement": "Arms race indicators.",
+    "upstream_causes": [
+      "anarchy",
+      "uncertainty"
+    ],
+    "downstream_effects": [
+      "arms race",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "defensive actions appear offensive",
+      "escalation can spiral"
+    ],
+    "pathological_extremes": [
+      "war",
+      "complete insecurity"
+    ],
+    "real_world_validation": [
+      "security dilemma is core IR theory"
+    ],
+    "implementation_notes": [
+      "dilemma analysis"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "security"
+    ]
+  },
+  {
+    "feature_id": "int.deterrence_credibility",
+    "feature_name": "Deterrence Credibility",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Threat must be believable; commitment problem.",
+    "state_space": "Continuous scalar representing credibility.",
+    "measurement": "Threat assessment.",
+    "upstream_causes": [
+      "capability",
+      "will",
+      "commitment"
+    ],
+    "downstream_effects": [
+      "deterrence success",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "credibility deters",
+      "credibility failure invites challenge"
+    ],
+    "pathological_extremes": [
+      "deterrence failure",
+      "bluff called"
+    ],
+    "real_world_validation": [
+      "deterrence is key concept"
+    ],
+    "implementation_notes": [
+      "deterrence analysis"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "deterrence"
+    ]
+  },
+  {
+    "feature_id": "int.extended_deterrence",
+    "feature_name": "Extended Deterrence",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Protecting allies; nuclear umbrella.",
+    "state_space": "Binary: extended deterrence present.",
+    "measurement": "Ally protection assessment.",
+    "upstream_causes": [
+      "commitment",
+      "capability"
+    ],
+    "downstream_effects": [
+      "ally security",
+      "escalation risk"
+    ],
+    "interaction_rules": [
+      "extended deterrence protects allies",
+      "extended deterrence can entrap"
+    ],
+    "pathological_extremes": [
+      "abandonment",
+      "entrapment in war"
+    ],
+    "real_world_validation": [
+      "extended deterrence is policy"
+    ],
+    "implementation_notes": [
+      "deterrence tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "deterrence"
+    ]
+  },
+  {
+    "feature_id": "int.alliance_treaty_obligation",
+    "feature_name": "Alliance Treaty Obligation",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "NATO Article 5; collective defense.",
+    "state_space": "Binary: treaty active or lapsed.",
+    "measurement": "Treaty compliance.",
+    "upstream_causes": [
+      "treaty",
+      "interest"
+    ],
+    "downstream_effects": [
+      "collective action",
+      "burden sharing"
+    ],
+    "interaction_rules": [
+      "treaties bind",
+      "treaties can be abandoned"
+    ],
+    "pathological_extremes": [
+      "treating collapse",
+      "free riding"
+    ],
+    "real_world_validation": [
+      "alliances are historical"
+    ],
+    "implementation_notes": [
+      "alliance tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "alliance"
+    ]
+  },
+  {
+    "feature_id": "int.bandwagoning_balancing",
+    "feature_name": "Bandwagoning vs. Balancing",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Joining strong side vs. opposing; threat level decides.",
+    "state_space": "Categorical: bandwagon or balance.",
+    "measurement": "State behavior.",
+    "upstream_causes": [
+      "threat level",
+      "capability"
+    ],
+    "downstream_effects": [
+      "alliance",
+      "security"
+    ],
+    "interaction_rules": [
+      "weak states bandwagon",
+      "strong states balance"
+    ],
+    "pathological_extremes": [
+      "complete bandwagon",
+      "self-defeating balancing"
+    ],
+    "real_world_validation": [
+      "bandwagoning and balancing are documented"
+    ],
+    "implementation_notes": [
+      "behavior tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "behavior"
+    ]
+  },
+  {
+    "feature_id": "int.free_rider_problem",
+    "feature_name": "Free-Rider Problem",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Alliance members under-contribute; burden-sharing disputes.",
+    "state_space": "Continuous scalar representing free riding.",
+    "measurement": "Contribution analysis.",
+    "upstream_causes": [
+      "alliance",
+      "relative costs"
+    ],
+    "downstream_effects": [
+      "alliance burden",
+      "resentment"
+    ],
+    "interaction_rules": [
+      "free riding exploits allies",
+      "free riding creates resentment"
+    ],
+    "pathological_extremes": [
+      "complete free riding",
+      "alliance collapse"
+    ],
+    "real_world_validation": [
+      "free riding is common"
+    ],
+    "implementation_notes": [
+      "free riding tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "burden"
+    ]
+  },
+  {
+    "feature_id": "int.economic_sanctions_efficacy",
+    "feature_name": "Economic Sanctions Efficacy",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Coercion through trade restriction; rarely work alone.",
+    "state_space": "Binary: sanctions effective or not.",
+    "measurement": "Policy outcome.",
+    "upstream_causes": [
+      "sanctions",
+      "target vulnerability"
+    ],
+    "downstream_effects": [
+      "policy change",
+      "humanitarian impact"
+    ],
+    "interaction_rules": [
+      "sanctions rarely work alone",
+      "sanctions create suffering"
+    ],
+    "pathological_extremes": [
+      "complete failure",
+      "humanitarian catastrophe"
+    ],
+    "real_world_validation": [
+      "sanctions often fail"
+    ],
+    "implementation_notes": [
+      "sanctions tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "sanctions"
+    ]
+  },
+  {
+    "feature_id": "int.smart_sanctions",
+    "feature_name": "Smart Sanctions",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Targeted on leaders vs. comprehensive; humanitarian distinction.",
+    "state_space": "Binary: smart or comprehensive.",
+    "measurement": "Sanctions type.",
+    "upstream_causes": [
+      "policy",
+      "humanitarian concerns"
+    ],
+    "downstream_effects": [
+      "target leaders",
+      "reduced humanitarian impact"
+    ],
+    "interaction_rules": [
+      "smart sanctions target leaders",
+      "comprehensive sanctions hurt civilians"
+    ],
+    "pathological_extremes": [
+      "smart sanctions failure",
+      "humanitarian disaster"
+    ],
+    "real_world_validation": [
+      "smart sanctions are preferred"
+    ],
+    "implementation_notes": [
+      "sanctions tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "sanctions"
+    ]
+  },
+  {
+    "feature_id": "int.humanitarian_intervention",
+    "feature_name": "Humanitarian Intervention",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "R2P doctrine; Libya 2011 vs. Syria 2011 divergence.",
+    "state_space": "Binary: intervention or not.",
+    "measurement": "Intervention decision.",
+    "upstream_causes": [
+      "humanitarian crisis",
+      "interest"
+    ],
+    "downstream_effects": [
+      "lives saved",
+      "sovereignty violation"
+    ],
+    "interaction_rules": [
+      "intervention saves lives",
+      "intervention violates sovereignty"
+    ],
+    "pathological_extremes": [
+      "intervention failure",
+      "escalation"
+    ],
+    "real_world_validation": [
+      "R2P is doctrine"
+    ],
+    "implementation_notes": [
+      "intervention tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "humanitarian"
+    ]
+  },
+  {
+    "feature_id": "int.peacekeeping_mission",
+    "feature_name": "Peacekeeping Mission",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Blue helmets; consent of parties required.",
+    "state_space": "Binary: peacekeeping present or not.",
+    "measurement": "Mission deployment.",
+    "upstream_causes": [
+      "conflict",
+      "consent"
+    ],
+    "downstream_effects": [
+      "stability",
+      "casualties"
+    ],
+    "interaction_rules": [
+      "peacekeeping requires consent",
+      "peacekeeping can fail"
+    ],
+    "pathological_extremes": [
+      "peacekeeping failure",
+      "peacekeeper casualties"
+    ],
+    "real_world_validation": [
+      "peacekeeping is common"
+    ],
+    "implementation_notes": [
+      "peacekeeping tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "peacekeeping"
+    ]
+  },
+  {
+    "feature_id": "int.arms_control_treaty",
+    "feature_name": "Arms Control Treaty",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Verification challenges; cheating incentives.",
+    "state_space": "Binary: treaty active or not.",
+    "measurement": "Treaty compliance.",
+    "upstream_causes": [
+      "negotiation",
+      "verification"
+    ],
+    "downstream_effects": [
+      "arms reduction",
+      "stability"
+    ],
+    "interaction_rules": [
+      "treaties reduce arms",
+      "cheating undermines treaties"
+    ],
+    "pathological_extremes": [
+      "treaty collapse",
+      "cheating detection"
+    ],
+    "real_world_validation": [
+      "arms control is historical"
+    ],
+    "implementation_notes": [
+      "treaty tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "arms"
+    ]
+  },
+  {
+    "feature_id": "int.nuclear_non_proliferation",
+    "feature_name": "Nuclear Non-Proliferation",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "NPT bargain; recognized vs. non-recognized weapons.",
+    "state_space": "Binary: NPT member or not.",
+    "measurement": "Nuclear status.",
+    "upstream_causes": [
+      "NPT",
+      "technology"
+    ],
+    "downstream_effects": [
+      "proliferation",
+      "stability"
+    ],
+    "interaction_rules": [
+      "NPT deters proliferation",
+      "non-recognition creates incentives"
+    ],
+    "pathological_extremes": [
+      "proliferation",
+      "treaty collapse"
+    ],
+    "real_world_validation": [
+      "NPT is key treaty"
+    ],
+    "implementation_notes": [
+      "proliferation tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "nuclear"
+    ]
+  },
+  {
+    "feature_id": "int.diplomatic_recognition",
+    "feature_name": "Diplomatic Recognition",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Statehood criteria; Montevideo Convention.",
+    "state_space": "Binary: recognized or not.",
+    "measurement": "Recognition status.",
+    "upstream_causes": [
+      "criteria",
+      "political considerations"
+    ],
+    "downstream_effects": [
+      "sovereignty",
+      "resources"
+    ],
+    "interaction_rules": [
+      "recognition enables statehood",
+      "non-recognition isolates"
+    ],
+    "pathological_extremes": [
+      "no recognition",
+      "contested recognition"
+    ],
+    "real_world_validation": [
+      "recognition matters"
+    ],
+    "implementation_notes": [
+      "recognition tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "recognition"
+    ]
+  },
+  {
+    "feature_id": "int.extraterritorial_jurisdiction",
+    "feature_name": "Extraterritorial Jurisdiction",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Laws applied abroad; US sanctions example.",
+    "state_space": "Binary: ETJ present or absent.",
+    "measurement": "Jurisdiction scope.",
+    "upstream_causes": [
+      "power",
+      "legal framework"
+    ],
+    "downstream_effects": [
+      "compliance",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "ETJ extends power",
+      "ETJ creates conflicts"
+    ],
+    "pathological_extremes": [
+      "complete ETJ",
+      "international conflict"
+    ],
+    "real_world_validation": [
+      "ETJ is common"
+    ],
+    "implementation_notes": [
+      "jurisdiction tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "jurisdiction"
+    ]
+  },
+  {
+    "feature_id": "int.international_court_compliance",
+    "feature_name": "International Court Compliance",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "ICJ rulings; enforcement absent.",
+    "state_space": "Binary: compliant or not.",
+    "measurement": "Ruling compliance.",
+    "upstream_causes": [
+      "ruling",
+      "political will"
+    ],
+    "downstream_effects": [
+      "court authority",
+      "rule of law"
+    ],
+    "interaction_rules": [
+      "compliance builds authority",
+      "non-compliance undermines"
+    ],
+    "pathological_extremes": [
+      "complete non-compliance",
+      "court irrelevance"
+    ],
+    "real_world_validation": [
+      "compliance varies"
+    ],
+    "implementation_notes": [
+      "compliance tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "court"
+    ]
+  },
+  {
+    "feature_id": "int.refugee_status_determination",
+    "feature_name": "Refugee Status Determination",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "1951 Convention criteria; persecution vs. economic.",
+    "state_space": "Binary: refugee status granted or not.",
+    "measurement": "Status determination.",
+    "upstream_causes": [
+      "application",
+      "criteria"
+    ],
+    "downstream_effects": [
+      "protection",
+      "resources"
+    ],
+    "interaction_rules": [
+      "status provides protection",
+      "economic migrants excluded"
+    ],
+    "pathological_extremes": [
+      "refugee status denied",
+      "abuse of system"
+    ],
+    "real_world_validation": [
+      "refugee status is legal"
+    ],
+    "implementation_notes": [
+      "status tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "refugee"
+    ]
+  },
+  {
+    "feature_id": "int.asylum_processing_backlog",
+    "feature_name": "Asylum Processing Backlog",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Years-long waits; mental health deterioration.",
+    "state_space": "Continuous scalar representing backlog.",
+    "measurement": "Pending applications.",
+    "upstream_causes": [
+      "demand",
+      "capacity"
+    ],
+    "downstream_effects": [
+      "integration",
+      "mental health"
+    ],
+    "interaction_rules": [
+      "backlog creates suffering",
+      "backlog increases costs"
+    ],
+    "pathological_extremes": [
+      "infinite backlog",
+      "system collapse"
+    ],
+    "real_world_validation": [
+      "backlog is common"
+    ],
+    "implementation_notes": [
+      "backlog tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "asylum"
+    ]
+  },
+  {
+    "feature_id": "int.remittance_corridor",
+    "feature_name": "Remittance Corridor",
+    "domain": "Political",
+    "scale": "Institution",
+    "timescale": "Years",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Money transfer routes; fees and regulatory barriers.",
+    "state_space": "Continuous scalar representing volume.",
+    "measurement": "Remittance flow.",
+    "upstream_causes": [
+      "diaspora",
+      "regulation"
+    ],
+    "downstream_effects": [
+      "development",
+      "family support"
+    ],
+    "interaction_rules": [
+      "remittances support families",
+      "fees reduce amounts"
+    ],
+    "pathological_extremes": [
+      "corridor collapse",
+      "money laundering"
+    ],
+    "real_world_validation": [
+      "remittances are large"
+    ],
+    "implementation_notes": [
+      "corridor tracking"
+    ],
+    "tags": [
+      "political",
+      "IR",
+      "remittance"
+    ]
+  },
+  {
+    "feature_id": "bio.homeostasis",
+    "feature_name": "Homeostasis",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Directly measurable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Body maintains internal stability through feedback loops.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Derived from vital signs and metabolic markers.",
+    "upstream_causes": [
+      "food intake",
+      "temperature",
+      "hydration"
+    ],
+    "downstream_effects": [
+      "energy",
+      "cognitive function",
+      "survival"
+    ],
+    "interaction_rules": [
+      "homeostasis degrades with age",
+      "stress disrupts balance"
+    ],
+    "pathological_extremes": [
+      "homeostatic collapse",
+      "death"
+    ],
+    "real_world_validation": [
+      "homeostasis is biological foundation"
+    ],
+    "implementation_notes": [
+      "physiology module tracks this"
+    ],
+    "tags": [
+      "biophysical",
+      "physiology",
+      "core"
+    ]
+  },
+  {
+    "feature_id": "bio.metabolic_rate",
+    "feature_name": "Metabolic Rate",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Energy expenditure at rest; basal metabolic rate.",
+    "state_space": "Continuous scalar (kcal/day).",
+    "measurement": "Caloric consumption at rest.",
+    "upstream_causes": [
+      "body mass",
+      "age",
+      "thyroid function"
+    ],
+    "downstream_effects": [
+      "hunger",
+      "energy",
+      "weight"
+    ],
+    "interaction_rules": [
+      "metabolism slows with age",
+      "thyroid regulates rate"
+    ],
+    "pathological_extremes": [
+      "metabolic syndrome",
+      "thyroid crisis"
+    ],
+    "real_world_validation": [
+      "BMR varies by individual"
+    ],
+    "implementation_notes": [
+      "calculated from physiology"
+    ],
+    "tags": [
+      "biophysical",
+      "metabolism",
+      "energy"
+    ]
+  },
+  {
+    "feature_id": "bio.immune_response",
+    "feature_name": "Immune Response",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Days",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Body's defense against pathogens and abnormal cells.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "White blood cell activity and antibody levels.",
+    "upstream_causes": [
+      "exposure",
+      "nutrition",
+      "sleep",
+      "stress"
+    ],
+    "downstream_effects": [
+      "illness susceptibility",
+      "recovery time"
+    ],
+    "interaction_rules": [
+      "immune weakens with stress",
+      "sleep supports immunity"
+    ],
+    "pathological_extremes": [
+      "autoimmune attack",
+      "immunodeficiency"
+    ],
+    "real_world_validation": [
+      "immune system is well studied"
+    ],
+    "implementation_notes": [
+      "epidemiology tracks this"
+    ],
+    "tags": [
+      "biophysical",
+      "immune",
+      "health"
+    ]
+  },
+  {
+    "feature_id": "bio.circadian_rhythm",
+    "feature_name": "Circadian Rhythm",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Directly measurable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "24-hour biological clock regulating sleep-wake cycles.",
+    "state_space": "Binary: synchronized or desynchronized.",
+    "measurement": "Sleep patterns and hormone levels.",
+    "upstream_causes": [
+      "light exposure",
+      "melatonin",
+      "social schedules"
+    ],
+    "downstream_effects": [
+      "sleep quality",
+      "cognitive performance",
+      "mood"
+    ],
+    "interaction_rules": [
+      "light resets circadian",
+      "shift work disrupts"
+    ],
+    "pathological_extremes": [
+      "circadian disorder",
+      "chronic insomnia"
+    ],
+    "real_world_validation": [
+      "circadian affects health"
+    ],
+    "implementation_notes": [
+      "sleep tracking module"
+    ],
+    "tags": [
+      "biophysical",
+      "sleep",
+      "rhythm"
+    ]
+  },
+  {
+    "feature_id": "bio.hydration",
+    "feature_name": "Hydration Status",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Water balance in body; critical for cellular function.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Urine color, thirst, skin turgor.",
+    "upstream_causes": [
+      "fluid intake",
+      "temperature",
+      "activity"
+    ],
+    "downstream_effects": [
+      "energy",
+      "cognitive function",
+      "kidney health"
+    ],
+    "interaction_rules": [
+      "thirst triggers drinking",
+      "dehydration impairs function"
+    ],
+    "pathological_extremes": [
+      "severe dehydration",
+      "heat stroke"
+    ],
+    "real_world_validation": [
+      "hydration is essential"
+    ],
+    "implementation_notes": [
+      "physiology tracks this"
+    ],
+    "tags": [
+      "biophysical",
+      "hydration",
+      "water"
+    ]
+  },
+  {
+    "feature_id": "bio.cardiovascular_fitness",
+    "feature_name": "Cardiovascular Fitness",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Weeks",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Heart and circulatory system efficiency.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "VO2 max, resting heart rate.",
+    "upstream_causes": [
+      "exercise",
+      "genetics",
+      "diet"
+    ],
+    "downstream_effects": [
+      "endurance",
+      "heart health",
+      "energy"
+    ],
+    "interaction_rules": [
+      "exercise improves fitness",
+      "sedentary degrades"
+    ],
+    "pathological_extremes": [
+      "heart disease",
+      "cardiac arrest"
+    ],
+    "real_world_validation": [
+      "fitness predicts health"
+    ],
+    "implementation_notes": [
+      "physiology module"
+    ],
+    "tags": [
+      "biophysical",
+      "cardiovascular",
+      "fitness"
+    ]
+  },
+  {
+    "feature_id": "bio.muscle_mass",
+    "feature_name": "Muscle Mass",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Weeks",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Skeletal muscle tissue; strength and mobility.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Body composition analysis.",
+    "upstream_causes": [
+      "exercise",
+      "protein intake",
+      "hormones"
+    ],
+    "downstream_effects": [
+      "strength",
+      "metabolism",
+      "mobility"
+    ],
+    "interaction_rules": [
+      "protein builds muscle",
+      "disuseatrophies"
+    ],
+    "pathological_extremes": [
+      "sarcopenia",
+      "muscle weakness"
+    ],
+    "real_world_validation": [
+      "muscle mass declines with age"
+    ],
+    "implementation_notes": [
+      "physiology tracking"
+    ],
+    "tags": [
+      "biophysical",
+      "muscle",
+      "strength"
+    ]
+  },
+  {
+    "feature_id": "bio.bone_density",
+    "feature_name": "Bone Density",
+    "domain": "Biophysical",
+    "scale": "Organism",
+    "timescale": "Months",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Mineral content in bones; structural integrity.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "DEXA scan results.",
+    "upstream_causes": [
+      "calcium",
+      "vitamin D",
+      "weight-bearing exercise"
+    ],
+    "downstream_effects": [
+      "fracture risk",
+      "mobility",
+      "posture"
+    ],
+    "interaction_rules": [
+      "calcium maintains density",
+      "inactivity weakens"
+    ],
+    "pathological_extremes": [
+      "osteoporosis",
+      "fractures"
+    ],
+    "real_world_validation": [
+      "bone density decreases with age"
+    ],
+    "implementation_notes": [
+      "physiology module"
+    ],
+    "tags": [
+      "biophysical",
+      "bone",
+      "skeleton"
+    ]
+  },
+  {
+    "feature_id": "cog.working_memory",
+    "feature_name": "Working Memory",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Short-term information holding and manipulation.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Digit span and cognitive tests.",
+    "upstream_causes": [
+      "attention",
+      "sleep",
+      "stress"
+    ],
+    "downstream_effects": [
+      "learning",
+      "reasoning",
+      "decision making"
+    ],
+    "interaction_rules": [
+      "working memory limits choices",
+      "practice improves capacity"
+    ],
+    "pathological_extremes": [
+      "working memory overload",
+      "cognitive collapse"
+    ],
+    "real_world_validation": [
+      "working memory is cognitive core"
+    ],
+    "implementation_notes": [
+      "neurology module tracks"
+    ],
+    "tags": [
+      "cognitive",
+      "memory",
+      "attention"
+    ]
+  },
+  {
+    "feature_id": "cog.long_term_memory",
+    "feature_name": "Long-Term Memory",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Years",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Storage and retrieval of past experiences and knowledge.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Recall tests and recognition.",
+    "upstream_causes": [
+      "encoding",
+      "consolidation",
+      "retrieval"
+    ],
+    "downstream_effects": [
+      "knowledge",
+      "identity",
+      "learning"
+    ],
+    "interaction_rules": [
+      "sleep consolidates memory",
+      "emotion enhances encoding"
+    ],
+    "pathological_extremes": [
+      "amnesia",
+      "Alzheimer's"
+    ],
+    "real_world_validation": [
+      "memory declines with age"
+    ],
+    "implementation_notes": [
+      "neurology module"
+    ],
+    "tags": [
+      "cognitive",
+      "memory",
+      "learning"
+    ]
+  },
+  {
+    "feature_id": "cog.executive_function",
+    "feature_name": "Executive Function",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "High-level cognitive control: planning, inhibition, switching.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Stroop test, Wisconsin card sort.",
+    "upstream_causes": [
+      "prefrontal cortex",
+      "dopamine",
+      "sleep"
+    ],
+    "downstream_effects": [
+      "goal-directed behavior",
+      "self-control"
+    ],
+    "interaction_rules": [
+      "executive function declines with fatigue",
+      "practice improves"
+    ],
+    "pathological_extremes": [
+      "executive dysfunction",
+      "ADHD"
+    ],
+    "real_world_validation": [
+      "executive function predicts success"
+    ],
+    "implementation_notes": [
+      "neurology module"
+    ],
+    "tags": [
+      "cognitive",
+      "control",
+      "planning"
+    ]
+  },
+  {
+    "feature_id": "cog.attentional_control",
+    "feature_name": "Attentional Control",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Seconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Ability to focus on relevant stimuli while ignoring distractions.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Attention tasks and reaction times.",
+    "upstream_causes": [
+      "arousal",
+      "interest",
+      "training"
+    ],
+    "downstream_effects": [
+      "learning",
+      "performance",
+      "errors"
+    ],
+    "interaction_rules": [
+      "novelty captures attention",
+      "fatigue reduces control"
+    ],
+    "pathological_extremes": [
+      "attention deficit",
+      "hyperfocus"
+    ],
+    "real_world_validation": [
+      "attention varies with task"
+    ],
+    "implementation_notes": [
+      "neurology tracking"
+    ],
+    "tags": [
+      "cognitive",
+      "attention",
+      "focus"
+    ]
+  },
+  {
+    "feature_id": "cog.processing_speed",
+    "feature_name": "Processing Speed",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Milliseconds",
+    "observability": "Instrument-dependent",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Speed of mental operations and response generation.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Reaction time tests.",
+    "upstream_causes": [
+      "neural efficiency",
+      "practice",
+      "fatigue"
+    ],
+    "downstream_effects": [
+      "learning",
+      "decision speed",
+      "performance"
+    ],
+    "interaction_rules": [
+      "practice increases speed",
+      "age decreases speed"
+    ],
+    "pathological_extremes": [
+      "processing slowdown",
+      "cognitive delay"
+    ],
+    "real_world_validation": [
+      "speed predicts performance"
+    ],
+    "implementation_notes": [
+      "neurology module"
+    ],
+    "tags": [
+      "cognitive",
+      "speed",
+      "efficiency"
+    ]
+  },
+  {
+    "feature_id": "cog.creativity",
+    "feature_name": "Creativity",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Latent/inferential",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Novel idea generation through divergent thinking.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Divergent association tasks.",
+    "upstream_causes": [
+      "knowledge",
+      "cognitive flexibility",
+      "motivation"
+    ],
+    "downstream_effects": [
+      "innovation",
+      "problem solving",
+      "art"
+    ],
+    "interaction_rules": [
+      "constraints boost creativity",
+      "mood affects creativity"
+    ],
+    "pathological_extremes": [
+      "creative block",
+      "psychotic ideation"
+    ],
+    "real_world_validation": [
+      "creativity is measurable"
+    ],
+    "implementation_notes": [
+      "cognitive module"
+    ],
+    "tags": [
+      "cognitive",
+      "creativity",
+      "innovation"
+    ]
+  },
+  {
+    "feature_id": "cog.metacognition",
+    "feature_name": "Metacognition",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Thinking about one's own thinking processes.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Self-report and performance prediction.",
+    "upstream_causes": [
+      "education",
+      "reflection",
+      "age"
+    ],
+    "downstream_effects": [
+      "learning",
+      "self-regulation",
+      "accuracy"
+    ],
+    "interaction_rules": [
+      "metacognition improves with age",
+      "training enhances"
+    ],
+    "pathological_extremes": [
+      "anosognosia",
+      "poor self-awareness"
+    ],
+    "real_world_validation": [
+      "metacognition predicts learning"
+    ],
+    "implementation_notes": [
+      "cognitive tracking"
+    ],
+    "tags": [
+      "cognitive",
+      "awareness",
+      "learning"
+    ]
+  },
+  {
+    "feature_id": "cog.language_production",
+    "feature_name": "Language Production",
+    "domain": "Cognitive",
+    "scale": "Organism",
+    "timescale": "Milliseconds",
+    "observability": "Directly measurable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Generating spoken or written language.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Speech analysis and writing quality.",
+    "upstream_causes": [
+      "vocabulary",
+      "grammar",
+      "working memory"
+    ],
+    "downstream_effects": [
+      "communication",
+      "social interaction"
+    ],
+    "interaction_rules": [
+      "fatigue impairs production",
+      "practice improves fluency"
+    ],
+    "pathological_extremes": [
+      "aphasia",
+      "stuttering"
+    ],
+    "real_world_validation": [
+      "language production varies"
+    ],
+    "implementation_notes": [
+      "cognitive module"
+    ],
+    "tags": [
+      "cognitive",
+      "language",
+      "communication"
+    ]
+  },
+  {
+    "feature_id": "aff.mood",
+    "feature_name": "Mood",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Self-report",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Baseline emotional state; sustained affect.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Mood scales and facial expression.",
+    "upstream_causes": [
+      "sleep",
+      "social contact",
+      "events"
+    ],
+    "downstream_effects": [
+      "motivation",
+      "social behavior",
+      "cognition"
+    ],
+    "interaction_rules": [
+      "positive mood enhances creativity",
+      "negative mood narrows focus"
+    ],
+    "pathological_extremes": [
+      "depression",
+      "mania"
+    ],
+    "real_world_validation": [
+      "mood varies daily"
+    ],
+    "implementation_notes": [
+      "affective tracking"
+    ],
+    "tags": [
+      "affective",
+      "mood",
+      "emotion"
+    ]
+  },
+  {
+    "feature_id": "aff.anxiety",
+    "feature_name": "Anxiety",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Self-report",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Future-oriented threat anticipation and worry.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Anxiety questionnaires and physiological markers.",
+    "upstream_causes": [
+      "uncertainty",
+      "threat",
+      "genetics"
+    ],
+    "downstream_effects": [
+      "avoidance",
+      "vigilance",
+      "physiological arousal"
+    ],
+    "interaction_rules": [
+      "uncertainty increases anxiety",
+      "control reduces anxiety"
+    ],
+    "pathological_extremes": [
+      "anxiety disorders",
+      "panic attacks"
+    ],
+    "real_world_validation": [
+      "anxiety is common"
+    ],
+    "implementation_notes": [
+      "affective module"
+    ],
+    "tags": [
+      "affective",
+      "anxiety",
+      "stress"
+    ]
+  },
+  {
+    "feature_id": "aff.anger",
+    "feature_name": "Anger",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Observable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Response to perceived injustice or frustration.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Self-report and behavioral observation.",
+    "upstream_causes": [
+      "frustration",
+      "perceived unfairness",
+      "threat"
+    ],
+    "downstream_effects": [
+      "aggression",
+      "confrontation",
+      "physiological arousal"
+    ],
+    "interaction_rules": [
+      "frustration builds anger",
+      "venting reduces intensity"
+    ],
+    "pathological_extremes": [
+      "rage",
+      "violent outburst"
+    ],
+    "real_world_validation": [
+      "anger is universal"
+    ],
+    "implementation_notes": [
+      "affective tracking"
+    ],
+    "tags": [
+      "affective",
+      "anger",
+      "emotion"
+    ]
+  },
+  {
+    "feature_id": "aff.joy",
+    "feature_name": "Joy",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Observable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Positive emotional response to desired outcomes.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Facial expression and self-report.",
+    "upstream_causes": [
+      "success",
+      "connection",
+      "pleasure"
+    ],
+    "downstream_effects": [
+      "social bonding",
+      "creativity",
+      "motivation"
+    ],
+    "interaction_rules": [
+      "joy is contagious",
+      "joy enhances memory"
+    ],
+    "pathological_extremes": [
+      "bipolar mania",
+      "addiction to pleasure"
+    ],
+    "real_world_validation": [
+      "joy is universal"
+    ],
+    "implementation_notes": [
+      "affective module"
+    ],
+    "tags": [
+      "affective",
+      "joy",
+      "happiness"
+    ]
+  },
+  {
+    "feature_id": "aff.sadness",
+    "feature_name": "Sadness",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Hours",
+    "observability": "Observable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Response to loss or disappointment.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Facial expression and self-report.",
+    "upstream_causes": [
+      "loss",
+      "failure",
+      "separation"
+    ],
+    "downstream_effects": [
+      "withdrawal",
+      "rumination",
+      "social behavior"
+    ],
+    "interaction_rules": [
+      "support reduces sadness",
+      "isolation deepens it"
+    ],
+    "pathological_extremes": [
+      "major depression",
+      "grief disorder"
+    ],
+    "real_world_validation": [
+      "sadness is universal"
+    ],
+    "implementation_notes": [
+      "affective module"
+    ],
+    "tags": [
+      "affective",
+      "sadness",
+      "grief"
+    ]
+  },
+  {
+    "feature_id": "aff.fear",
+    "feature_name": "Fear",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Seconds",
+    "observability": "Observable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Response to immediate threat; survival system.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Physiological response and behavior.",
+    "upstream_causes": [
+      "threat detection",
+      "conditioning",
+      "genetics"
+    ],
+    "downstream_effects": [
+      "fight",
+      "flight",
+      "freeze"
+    ],
+    "interaction_rules": [
+      "fear is adaptive",
+      "fear can be irrational"
+    ],
+    "pathological_extremes": [
+      "phobia",
+      "PTSD"
+    ],
+    "real_world_validation": [
+      "fear is survival mechanism"
+    ],
+    "implementation_notes": [
+      "affective module"
+    ],
+    "tags": [
+      "affective",
+      "fear",
+      "threat"
+    ]
+  },
+  {
+    "feature_id": "aff.shame",
+    "feature_name": "Shame",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Negative self-evaluation; public humiliation awareness.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Self-report and avoidance behavior.",
+    "upstream_causes": [
+      "social norm violation",
+      "exposure",
+      "internal standards"
+    ],
+    "downstream_effects": [
+      "withdrawal",
+      "apology",
+      "defensive behavior"
+    ],
+    "interaction_rules": [
+      "shame is social",
+      "shame can motivate improvement"
+    ],
+    "pathological_extremes": [
+      "toxic shame",
+      "shame spiral"
+    ],
+    "real_world_validation": [
+      "shame varies by culture"
+    ],
+    "implementation_notes": [
+      "affective tracking"
+    ],
+    "tags": [
+      "affective",
+      "shame",
+      "self"
+    ]
+  },
+  {
+    "feature_id": "aff.compassion",
+    "feature_name": "Compassion",
+    "domain": "Affective",
+    "scale": "Organism",
+    "timescale": "Minutes",
+    "observability": "Observable",
+    "reversibility": "Fully reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Empathic concern for others' suffering; motivation to help.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Behavioral observation and self-report.",
+    "upstream_causes": [
+      "empathy",
+      "attachment",
+      "moral values"
+    ],
+    "downstream_effects": [
+      "helping behavior",
+      "social bonding",
+      "cooperation"
+    ],
+    "interaction_rules": [
+      "compassion is trainable",
+      "burnout reduces compassion"
+    ],
+    "pathological_extremes": [
+      "compassion fatigue",
+      "empathy overload"
+    ],
+    "real_world_validation": [
+      "compassion improves relationships"
+    ],
+    "implementation_notes": [
+      "affective module"
+    ],
+    "tags": [
+      "affective",
+      "compassion",
+      "empathy"
+    ]
+  },
+  {
+    "feature_id": "soc.trust",
+    "feature_name": "Trust",
+    "domain": "Social",
+    "scale": "Dyad",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Belief in other's reliability and goodwill.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Behavioral games and self-report.",
+    "upstream_causes": [
+      "past interactions",
+      "reputation",
+      "similarity"
+    ],
+    "downstream_effects": [
+      "cooperation",
+      "information sharing",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "trust builds with consistency",
+      "betrayal destroys trust"
+    ],
+    "pathological_extremes": [
+      "complete distrust",
+      "naive trust"
+    ],
+    "real_world_validation": [
+      "trust is foundational"
+    ],
+    "implementation_notes": [
+      "relationships module"
+    ],
+    "tags": [
+      "social",
+      "trust",
+      "relationships"
+    ]
+  },
+  {
+    "feature_id": "soc.reciprocity",
+    "feature_name": "Reciprocity",
+    "domain": "Social",
+    "scale": "Dyad",
+    "timescale": "Days",
+    "observability": "Observable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Returning favors; balanced exchange.",
+    "state_space": "Continuous scalar from -1 to 1.",
+    "measurement": "Resource exchange tracking.",
+    "upstream_causes": [
+      "social norms",
+      "relationship type",
+      "cost-benefit"
+    ],
+    "downstream_effects": [
+      "relationship quality",
+      "cooperation",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "direct reciprocity builds relationships",
+      "indirect reciprocity builds reputation"
+    ],
+    "pathological_extremes": [
+      "exploitation",
+      "one-sided exchange"
+    ],
+    "real_world_validation": [
+      "reciprocity is universal"
+    ],
+    "implementation_notes": [
+      "relationships tracking"
+    ],
+    "tags": [
+      "social",
+      "reciprocity",
+      "exchange"
+    ]
+  },
+  {
+    "feature_id": "soc.kinship",
+    "feature_name": "Kinship",
+    "domain": "Social",
+    "scale": "Dyad",
+    "timescale": "Years",
+    "observability": "Directly measurable",
+    "reversibility": "Irreversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Genetic relatedness; family bonds.",
+    "state_space": "Continuous scalar from 0 to 1.",
+    "measurement": "Genetic coefficient.",
+    "upstream_causes": [
+      "birth",
+      "marriage",
+      "adoption"
+    ],
+    "downstream_effects": [
+      "altruism",
+      "inheritance",
+      "conflict"
+    ],
+    "interaction_rules": [
+      "kinship increases altruism",
+      "inbreeding reduces fitness"
+    ],
+    "pathological_extremes": [
+      "nepotism",
+      "genetic diseases"
+    ],
+    "real_world_validation": [
+      "kinship is biological"
+    ],
+    "implementation_notes": [
+      "relationships module"
+    ],
+    "tags": [
+      "social",
+      "kinship",
+      "family"
+    ]
+  },
+  {
+    "feature_id": "soc.peer_influence",
+    "feature_name": "Peer Influence",
+    "domain": "Social",
+    "scale": "Group",
+    "timescale": "Days",
+    "observability": "Observable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Conformity to group norms and behaviors.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Behavioral matching analysis.",
+    "upstream_causes": [
+      "group identification",
+      "status",
+      "conformity pressure"
+    ],
+    "downstream_effects": [
+      "behavior",
+      "attitudes",
+      "beliefs"
+    ],
+    "interaction_rules": [
+      "higher status increases influence",
+      "isolation reduces influence"
+    ],
+    "pathological_extremes": [
+      "groupthink",
+      "peer pressure corruption"
+    ],
+    "real_world_validation": [
+      "peer influence is strong"
+    ],
+    "implementation_notes": [
+      "social tracking"
+    ],
+    "tags": [
+      "social",
+      "influence",
+      "peers"
+    ]
+  },
+  {
+    "feature_id": "soc.status",
+    "feature_name": "Social Status",
+    "domain": "Social",
+    "scale": "Group",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Compositional",
+    "mechanism": "Relative position in group hierarchy.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Social network analysis and behavior.",
+    "upstream_causes": [
+      "resources",
+      "skills",
+      "relationships"
+    ],
+    "downstream_effects": [
+      "access to resources",
+      "influence",
+      "stress"
+    ],
+    "interaction_rules": [
+      "status grants privileges",
+      "status loss causes stress"
+    ],
+    "pathological_extremes": [
+      "complete status loss",
+      "tyranny of high status"
+    ],
+    "real_world_validation": [
+      "status is universal"
+    ],
+    "implementation_notes": [
+      "social tracking"
+    ],
+    "tags": [
+      "social",
+      "status",
+      "hierarchy"
+    ]
+  },
+  {
+    "feature_id": "soc.group_cohesion",
+    "feature_name": "Group Cohesion",
+    "domain": "Social",
+    "scale": "Group",
+    "timescale": "Days",
+    "observability": "Latent/inferential",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Attraction to group and commitment to membership.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Social network density and commitment.",
+    "upstream_causes": [
+      "shared identity",
+      "common goals",
+      "interdependence"
+    ],
+    "downstream_effects": [
+      "coordination",
+      "solidarity",
+      "conformity"
+    ],
+    "interaction_rules": [
+      "shared threats increase cohesion",
+      "internal conflict reduces it"
+    ],
+    "pathological_extremes": [
+      "groupthink",
+      "total fragmentation"
+    ],
+    "real_world_validation": [
+      "cohesion enables collective action"
+    ],
+    "implementation_notes": [
+      "group tracking"
+    ],
+    "tags": [
+      "social",
+      "cohesion",
+      "group"
+    ]
+  },
+  {
+    "feature_id": "soc.conflict",
+    "feature_name": "Social Conflict",
+    "domain": "Social",
+    "scale": "Dyad",
+    "timescale": "Minutes",
+    "observability": "Observable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Synergistic",
+    "mechanism": "Hostile interaction due to incompatible goals.",
+    "state_space": "Continuous scalar from 0 to 100.",
+    "measurement": "Conflict frequency and intensity.",
+    "upstream_causes": [
+      "competition",
+      "misunderstanding",
+      "values"
+    ],
+    "downstream_effects": [
+      "aggression",
+      "avoidance",
+      "resolution"
+    ],
+    "interaction_rules": [
+      "escalation possible",
+      "de-escalation possible"
+    ],
+    "pathological_extremes": [
+      "violence",
+      "permanent rift"
+    ],
+    "real_world_validation": [
+      "conflict is common"
+    ],
+    "implementation_notes": [
+      "relationships tracking"
+    ],
+    "tags": [
+      "social",
+      "conflict",
+      "aggression"
+    ]
+  },
+  {
+    "feature_id": "soc.coalition",
+    "feature_name": "Coalition Formation",
+    "domain": "Social",
+    "scale": "Group",
+    "timescale": "Days",
+    "observability": "Observable",
+    "reversibility": "Partially reversible",
+    "emergence_class": "Self-organizing",
+    "mechanism": "Temporary alliance for shared goal pursuit.",
+    "state_space": "Binary: coalition present or not.",
+    "measurement": "Alliance tracking.",
+    "upstream_causes": [
+      "shared interests",
+      "threat",
+      "opportunity"
+    ],
+    "downstream_effects": [
+      "collective action",
+      "power shift",
+      "exclusion"
+    ],
+    "interaction_rules": [
+      "coalitions target power",
+      "coalitions can fracture"
+    ],
+    "pathological_extremes": [
+      "factionalism",
+      "civil war"
+    ],
+    "real_world_validation": [
+      "coalitions are common"
+    ],
+    "implementation_notes": [
+      "group tracking"
+    ],
+    "tags": [
+      "social",
+      "coalition",
+      "alliance"
+    ]
+  }
+]

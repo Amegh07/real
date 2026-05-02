@@ -42,9 +42,9 @@ FEMALE_NAMES = [
 ]
 
 # Bond score threshold to be eligible for marriage proposal
-MARRIAGE_BOND_THRESHOLD = 60.0
+MARRIAGE_BOND_THRESHOLD = 20.0  # Lowered from 35 to match bond levels
 # Probability of marriage being proposed per tick (when eligible)
-MARRIAGE_CHANCE_PER_TICK = 0.001
+MARRIAGE_CHANCE_PER_TICK = 0.01  # Increased from 0.001
 # Probability of a fertile woman having a baby per tick
 BIRTH_CHANCE_PER_TICK = 0.0015
 # Children a couple can have maximum
@@ -62,9 +62,13 @@ class AgentManager:
         self.world_state = world_state
         self.event_bus   = event_bus
         self.groq_client = groq_client
+        self.health_system = None
         self.agents: Dict[str, Agent] = {}
         self.rel_graph   = RelationshipGraph(event_bus)
         self._used_names: set = set()
+
+    def attach_health_system(self, health_system):
+        self.health_system = health_system
 
     # ─────────────────────────────────────────────────────────
     # Spawning
@@ -81,6 +85,8 @@ class AgentManager:
                 ADULT_AGE_YEARS * TICKS_PER_SIM_YEAR,
                 50 * TICKS_PER_SIM_YEAR
             )
+            # Ensure is_adult matches age after setting age_ticks
+            agent.is_adult = agent.age_ticks >= ADULT_AGE_YEARS * TICKS_PER_SIM_YEAR
             self.agents[agent.id] = agent
             self.rel_graph.register_agent(agent.id)
             logger.debug(f"Spawned: {agent}")
@@ -147,6 +153,10 @@ class AgentManager:
         self.agents[child.id] = child
         self.rel_graph.register_agent(child.id)
 
+        # Initialize causal tracking variables
+        child._last_hunger = child.hunger
+        child._last_money = child.money
+
         # Update parents
         mother.children_ids.append(child.id)
         father.children_ids.append(child.id)
@@ -157,6 +167,17 @@ class AgentManager:
         mother.memory.record(tick, f"I gave birth to {name}. My heart is full.", importance=10, emotion="happy")
         father.memory.record(tick, f"My child {name} was born today. I am overjoyed.", importance=10, emotion="happy")
         self.event_bus.emit(f"[BIRTH] {mother.name} & {father.name} welcomed baby {name} ({gender})!")
+        self.event_bus.emit_causal(
+            tick=tick,
+            category="lifecycle",
+            source=f"{mother.name}+{father.name}",
+            target=name,
+            summary=f"{name} was born to {mother.name} and {father.name}.",
+            mechanism="Marriage, fertility, and birth chance created a new agent entity.",
+            confidence=0.98,
+            reversibility="irreversible",
+            evidence=[f"mother={mother.id}", f"father={father.id}", f"child={child.id}"],
+        )
 
         logger.info(f"[Birth] {name} born to {mother.name} & {father.name}")
         return child
@@ -184,19 +205,32 @@ class AgentManager:
         dead_ids = [aid for aid, a in self.agents.items() if a.is_dead]
         for aid in dead_ids:
             agent = self.agents.pop(aid)
-            if agent.job and self.world_state.economy:
+            if agent.job and self.world_state and self.world_state.economy:
                 self.world_state.economy.release_job(agent)
-            # If married, free the spouse
-            if agent.spouse_id and agent.spouse_id in self.agents:
-                spouse = self.agents[agent.spouse_id]
-                spouse.is_married = False
-                spouse.spouse_id = None
-                spouse.happiness = max(0.0, spouse.happiness - 20.0)
-                spouse.life_events.append(f"Lost my beloved {agent.name} to {agent.death_reason}.")
-                spouse.memory.record(tick, f"{agent.name} has died. I am heartbroken.", importance=9, emotion="sad")
+            # If married, free the spouse (guard against stale references)
+            if agent.spouse_id:
+                spouse = self.agents.get(agent.spouse_id)
+                if spouse is not None and not spouse.is_dead:
+                    spouse.is_married = False
+                    spouse.spouse_id = None
+                    spouse.happiness = max(0.0, spouse.happiness - 20.0)
+                    spouse.life_events.append(f"Lost my beloved {agent.name} to {agent.death_reason}.")
+                    spouse.memory.record(tick, f"{agent.name} has died. I am heartbroken.", importance=9, emotion="sad")
+                    spouse._refresh_dimension_state()
             age_str = f"{agent.age_years:.0f}"
             self.event_bus.emit(
                 f"[ALERT] {agent.name} ({agent.gender}, age {age_str}) has died from {agent.death_reason}."
+            )
+            self.event_bus.emit_causal(
+                tick=tick,
+                category="mortality",
+                source=agent.name,
+                target=agent.death_reason,
+                summary=f"{agent.name} died from {agent.death_reason}.",
+                mechanism="Critical biophysical or age-related failure ended the agent lifecycle.",
+                confidence=0.98,
+                reversibility="irreversible",
+                evidence=[f"age={age_str}", f"reason={agent.death_reason}"],
             )
             self.rel_graph.remove_agent(aid)
             self._used_names.discard(agent.name)
@@ -253,6 +287,19 @@ class AgentManager:
         female.life_events.append(f"Married {male.name}.")
         male.memory.record(tick, f"I married {female.name} today. Best day of my life.", importance=10, emotion="happy")
         female.memory.record(tick, f"I married {male.name} today. So happy.", importance=10, emotion="happy")
+        male._refresh_dimension_state()
+        female._refresh_dimension_state()
+        self.event_bus.emit_causal(
+            tick=tick,
+            category="social",
+            source=male.name,
+            target=female.name,
+            summary=f"{male.name} and {female.name} formed a marriage bond.",
+            mechanism="High social bond crossed the marriage threshold and converted friendship into a committed dyad.",
+            confidence=0.9,
+            reversibility="partial",
+            evidence=[f"male={male.id}", f"female={female.id}"],
+        )
 
         self.event_bus.emit(f"[MARRIAGE] {male.name} and {female.name} have gotten married!")
         logger.info(f"[Marriage] {male.name} wed {female.name}")
@@ -283,8 +330,8 @@ class AgentManager:
 
     def execute_action(self, agent: Agent):
         action = agent.current_action
-        eco    = self.world_state.economy
-        tick   = self.world_state.tick_number
+        eco    = getattr(self.world_state, 'economy', None) or getattr(self.world_state, 'eco', None)
+        tick   = getattr(self.world_state, 'tick_number', 0) or 0
 
         # Children can only eat/sleep/idle (enforced here and in decision engine)
         if not agent.is_adult and action not in ("eat", "sleep", "idle"):
@@ -298,37 +345,69 @@ class AgentManager:
                 self.event_bus.emit(f"{agent.name} looked for work but found nothing.")
                 agent.happiness = max(0.0, agent.happiness - 5.0)
                 agent.memory.record(tick, "Searched for a job but found nothing.", importance=6, emotion="sad")
+                self.event_bus.emit_causal(
+                    tick=tick,
+                    category="economy",
+                    source=agent.name,
+                    target="job_market",
+                    summary=f"{agent.name} failed to secure employment.",
+                    mechanism="Job search exceeded current market capacity or preference availability.",
+                    confidence=0.9,
+                    reversibility="reversible",
+                    evidence=[f"agent={agent.id}"],
+                )
             else:
                 agent.memory.record_positive(tick, f"Got a job as {result}.")
+                self.event_bus.emit_causal(
+                    tick=tick,
+                    category="economy",
+                    source="job_market",
+                    target=agent.name,
+                    summary=f"{agent.name} entered employment as {result}.",
+                    mechanism="Available job slot matched the agent's search and assignment logic.",
+                    confidence=0.95,
+                    reversibility="reversible",
+                    evidence=[f"job={result}"],
+                )
+            agent._refresh_dimension_state()
 
         elif action == "spend_luxury" and eco:
             category = "entertainment" if agent.happiness > 30 else "medicine"
             success = eco.spend(agent, category)
             if success:
                 self.event_bus.emit(f"{agent.name} spent money on {category}.")
+            agent._refresh_dimension_state()
 
         elif action == "visit_doctor":
             MEDICAL_COST = 30.0
             if getattr(agent, "is_sick", False) and agent.money >= MEDICAL_COST:
-                # Find a random active healer
+                # Find a random active healer - guard against empty list
                 healers = [a for a in self.get_all_agents() if a.job == "Healer" and a.id != agent.id]
-                healer = random.choice(healers) if healers else None
-                
-                # Pay the money
-                agent.money -= MEDICAL_COST
-                
+                healer = None
+                if healers:
+                    healer = random.choice(healers)
+                else:
+                    # Try to find any medical professional
+                    healers = [a for a in self.get_all_agents() if getattr(a, 'job', None) in ["Healer", "Doctor", "Apothecary"] and a.id != agent.id]
+                    if healers:
+                        healer = random.choice(healers)
+
+                # Only deduct money if a healer is available
                 if healer:
+                    agent.money -= MEDICAL_COST
                     healer.money += MEDICAL_COST
                     self.event_bus.emit(f"{agent.name} paid ${MEDICAL_COST} to Dr. {healer.name} for treatment.")
                     agent.memory.record(tick, f"Visited Dr. {healer.name}. I feel much better.", importance=7, emotion="happy")
                     healer.memory.record(tick, f"Treated {agent.name} and earned ${MEDICAL_COST}.", importance=6, emotion="happy")
+
+                    if self.health_system:
+                        self.health_system.apply_treatment(agent, tick)
                 else:
-                    self.event_bus.emit(f"{agent.name} visited the apothecary and bought medicine for ${MEDICAL_COST}.")
-                    agent.memory.record(tick, "Bought medicine. I feel much better.", importance=7, emotion="neutral")
-                
-                # Apply the cure
-                agent.is_sick = False
-                agent.illness_severity = 0.0
+                    # No healer available - still get treatment without paying
+                    self.event_bus.emit(f"{agent.name} visited the apothecary but no healer was available.")
+                    agent.memory.record(tick, "Visited apothecary but no healer available.", importance=5, emotion="neutral")
+
+                agent._refresh_dimension_state()
 
         # ── Physical action effects ───────────────────────────
         agent.apply_action_effect(action, self.world_state)
@@ -338,7 +417,10 @@ class AgentManager:
             others = [a for a in self.get_all_agents() if a.id != agent.id]
             if others:
                 partner = random.choice(others)
-                delta = random.uniform(3.0, 12.0) * agent.traits.get("sociability", 0.5)
+                # Stronger bonds for faster relationship formation
+                base_delta = random.uniform(6.0, 18.0)
+                extraversion_boost = agent.big_five.get("extraversion", 0.5)
+                delta = base_delta * (0.5 + extraversion_boost)
                 self.rel_graph.update_bond(agent.id, partner.id, partner.name, delta)
                 self.rel_graph.update_bond(partner.id, agent.id, agent.name, delta * 0.8)
                 # Sync social counters
@@ -346,3 +428,16 @@ class AgentManager:
                 partner.friend_count = len(self.rel_graph.get_friends(partner.id))
                 agent.rival_count  = len(self.rel_graph.get_rivals(agent.id))
                 partner.rival_count = len(self.rel_graph.get_rivals(partner.id))
+                agent._refresh_dimension_state()
+                partner._refresh_dimension_state()
+                self.event_bus.emit_causal(
+                    tick=tick,
+                    category="social",
+                    source=agent.name,
+                    target=partner.name,
+                    summary=f"{agent.name} socialized with {partner.name}.",
+                    mechanism="A directed social interaction increased bond strength between two agents.",
+                    confidence=0.82,
+                    reversibility="reversible",
+                    evidence=[f"delta={round(delta, 2)}"],
+                )

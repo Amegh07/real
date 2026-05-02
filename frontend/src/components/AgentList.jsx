@@ -42,7 +42,7 @@ export default function AgentList({ agents, onSelect }) {
   return (
     <div className="agent-grid">
       {agents.map(agent => {
-        const isCritical = agent.hunger < 15 || agent.energy < 15 || agent.happiness < 15;
+        const isCritical = (agent.hunger ?? 100) < 15 || (agent.energy ?? 100) < 15 || (agent.happiness ?? 100) < 15;
         const pColor = PERSONALITY_COLORS[agent.personality] || 'var(--accent-blue)';
 
         return (
@@ -65,6 +65,7 @@ export default function AgentList({ agents, onSelect }) {
                   <span style={{ fontSize: '1.05rem' }}>{PERSONALITY_ICONS[agent.personality] ?? '👤'}</span>
                   <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-main)' }}>{agent.name}</span>
                   {isCritical && <span className="badge badge-red" style={{ padding: '1px 6px', fontSize: '0.65rem' }}>CRISIS</span>}
+                  {agent.is_sick && <span className="badge badge-red" style={{ padding: '1px 6px', fontSize: '0.65rem' }}>ILL</span>}
                 </div>
                 <div style={{ marginTop: '3px' }}>
                   <span className="badge" style={{ background: `${pColor}22`, color: pColor, border: `1px solid ${pColor}44`, fontSize: '0.65rem' }}>
@@ -74,7 +75,7 @@ export default function AgentList({ agents, onSelect }) {
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ color: 'var(--accent-green)', fontWeight: 700, fontSize: '1.1rem' }}>
-                  ${agent.money?.toFixed(0)}
+                  ${(agent.money ?? 0).toFixed(0)}
                 </div>
                 <div style={{ marginTop: '3px' }}>
                   <span className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>
@@ -119,7 +120,7 @@ export default function AgentList({ agents, onSelect }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.73rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.7rem' }}>
               <span>💖 {agent.friend_count} Friends</span>
               <span>⚔️ {agent.rival_count} Rivals</span>
-              <span>{agent.is_dead ? '💀 Dead' : `🕰️ Age ${Math.floor(agent.age_years)}`}</span>
+              <span>{agent.is_dead ? '💀 Dead' : agent.is_sick ? `🩺 ${agent.disease_name || 'Ill'}` : `🕰️ Age ${Math.floor(agent.age_years)}`}</span>
             </div>
           </div>
         );

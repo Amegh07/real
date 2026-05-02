@@ -149,6 +149,21 @@ body {
   gap: 1rem;
 }
 
+.dimension-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
+}
+
+.dimension-card,
+.feature-card,
+.causal-card {
+  padding: 0.95rem;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+
 /* ── Typography ────────────────────────────────────────── */
 h1 {
   font-weight: 800;

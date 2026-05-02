@@ -16,8 +16,8 @@ import random
 logger = get_logger(__name__)
 
 # Bond strength thresholds
-FRIEND_THRESHOLD  =  30   # bond >= 30 → friend
-RIVAL_THRESHOLD   = -30   # bond <= -30 → rival
+FRIEND_THRESHOLD  =  15   # bond >= 15 -> friend (lowered from 30)
+RIVAL_THRESHOLD   = -15   # bond <= -15 -> rival (lowered from -30)
 MAX_BOND          =  100
 MIN_BOND          = -100
 

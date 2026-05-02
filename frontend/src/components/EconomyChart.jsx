@@ -12,8 +12,11 @@ const INNER_W = W - PAD.left - PAD.right;
 const INNER_H = H - PAD.top - PAD.bottom;
 
 function normalize(arr) {
-  const min = Math.min(...arr);
-  const max = Math.max(...arr);
+  if (!arr || arr.length === 0) return { min: 0, max: 1, fn: v => 0.5 };
+  const validArr = arr.filter(v => typeof v === 'number' && !isNaN(v));
+  if (validArr.length === 0) return { min: 0, max: 1, fn: v => 0.5 };
+  const min = Math.min(...validArr);
+  const max = Math.max(...validArr);
   const range = max - min || 1;
   return { min, max, fn: v => (v - min) / range };
 }

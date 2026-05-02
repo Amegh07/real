@@ -8,6 +8,7 @@ Economy handles: money flow, jobs, spending.
 
 import random
 from utils.logger import get_logger
+from ontology.dimensions import build_world_dimension_state
 
 logger = get_logger(__name__)
 
@@ -52,7 +53,7 @@ class WorldState:
         self.total_money_circulated: float = 0.0
 
     def inject_economy(self, economy):
-        """Called by SimulationEngine after Economy is constructed."""
+        """Called by GodTierEngine after Economy is constructed."""
         self.economy = economy
 
     def initialize(self):
@@ -97,14 +98,31 @@ class WorldState:
             self.weather = random.choice(WEATHER_OPTIONS)
             if self.weather != old:
                 self.event_bus.emit(f"Weather changed to {self.weather}.")
+                self.event_bus.emit_causal(
+                    tick=tick_number,
+                    category="environment",
+                    source=old,
+                    target=self.weather,
+                    summary=f"Weather shifted from {old} to {self.weather}.",
+                    mechanism="Stochastic environmental variation modifies agent mood and energy.",
+                    confidence=0.8,
+                    reversibility="reversible",
+                    evidence=[f"old={old}", f"new={self.weather}"],
+                )
 
         # Apply weather effects to all agents
         effects = WEATHER_EFFECTS.get(self.weather, {})
-        for agent in agents:
-            if effects.get("happiness_delta"):
-                agent.happiness = max(0.0, min(100.0, agent.happiness + effects["happiness_delta"]))
-            if effects.get("energy_delta"):
-                agent.energy = max(0.0, min(100.0, agent.energy + effects["energy_delta"]))
+        if agents:
+            for agent in agents:
+                try:
+                    if effects.get("happiness_delta"):
+                        hap = agent.happiness + effects["happiness_delta"]
+                        agent.happiness = max(0.0, min(100.0, hap))
+                    if effects.get("energy_delta"):
+                        nrg = agent.energy + effects["energy_delta"]
+                        agent.energy = max(0.0, min(100.0, nrg))
+                except (AttributeError, TypeError):
+                    pass
 
         # Tick economy subsystem
         if self.economy:
@@ -154,3 +172,8 @@ class WorldState:
         if self.economy:
             snap["economy"] = self.economy.get_snapshot()
         return snap
+
+    def get_dimensional_snapshot(self, agents: list) -> dict:
+        if not self.economy:
+            return {"population": len(agents), "dimensions": {}}
+        return build_world_dimension_state(self, self.economy, agents)

@@ -10,10 +10,14 @@ Clean wrapper around the Groq API.
 
 import time
 import json
+from collections import deque
 from typing import Optional, Dict
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+# Timeout for API calls in seconds
+GROQ_TIMEOUT = 30
 
 try:
     from groq import Groq
@@ -30,12 +34,13 @@ class GroqClient:
 
     def __init__(self, config: dict):
         self.config = config
-        self.enabled = config.get("use_groq", False)
-        self.model = config.get("groq_model", "llama3-8b-8192")
+        self.enabled = config.get("use_groq", True)  # Default to True if config provided
+        self.model = config.get("groq_model", "llama-3.1-8b-instant")  # Use valid model
         self.max_tokens = config.get("groq_max_tokens", 250)
         self.client = None
-        
-        self._cache: Dict[str, str] = {}
+
+        self._cache: deque = deque(maxlen=500)
+        self._cache_lookup: Dict[str, str] = {}  # Map for fast lookup
 
         if self.enabled:
             if not GROQ_AVAILABLE:
@@ -64,8 +69,8 @@ class GroqClient:
         if not self.enabled or not self.client:
             raise ValueError("Groq is disabled or unavailable.")
 
-        if cache_key and cache_key in self._cache:
-            return self._cache[cache_key]
+        if cache_key and cache_key in self._cache_lookup:
+            return self._cache_lookup[cache_key]
 
         try:
             start_time = time.time()
@@ -77,7 +82,8 @@ class GroqClient:
                 ],
                 max_tokens=self.max_tokens,
                 temperature=0.4,
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
+                timeout=GROQ_TIMEOUT
             )
             result = response.choices[0].message.content.strip()
             
@@ -85,10 +91,12 @@ class GroqClient:
             logger.debug(f"Groq API call succeeded in {elapsed:.2f}s")
             
             if cache_key:
-                # Keep cache small to avoid memory leak
-                if len(self._cache) > 500:
-                    self._cache.clear()
-                self._cache[cache_key] = result
+                # Remove oldest cache entry
+                if len(self._cache) >= self._cache.maxlen:
+                    oldest = self._cache.popleft()
+                    self._cache_lookup.pop(oldest, None)
+                self._cache.append(cache_key)
+                self._cache_lookup[cache_key] = result
                 
             return result
             

@@ -87,6 +87,11 @@ export default function AgentModal({ agentId, onClose }) {
                   <span className={`badge ${agent.is_dead ? 'badge-red' : 'badge-blue'}`}>
                     {agent.is_dead ? '💀 Deceased' : `🕰️ Age ${Math.floor(agent.age_years)}`}
                   </span>
+                  {agent.is_sick && (
+                    <span className="badge badge-red">
+                      🩺 {agent.disease_name || 'Ill'} {Math.round(agent.illness_severity)}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -97,10 +102,10 @@ export default function AgentModal({ agentId, onClose }) {
                 Inner Reflection (Phase 5 AI)
               </div>
               <div style={{ fontSize: '1.05rem', fontStyle: 'italic', color: 'var(--text-main)', lineHeight: 1.5, marginBottom: '0.8rem' }}>
-                "{agent.memory.reflection || 'No thoughts formulated yet.'}"
+                "{agent.memory?.reflection || agent.memory?.reflection || 'No thoughts formulated yet.'}"
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.8rem', fontSize: '0.85rem' }}>
-                <div style={{ color: 'var(--text-muted)' }}>Current Action: <span style={{ color: 'var(--text-main)', textTransform: 'capitalize' }}>{agent.current_action.replace('_', ' ')}</span></div>
+                <div style={{ color: 'var(--text-muted)' }}>Current Action: <span style={{ color: 'var(--text-main)', textTransform: 'capitalize' }}>{(agent.current_action || '').replace(/_/g, ' ')}</span></div>
                 <div style={{ color: 'var(--accent-blue)', fontWeight: 500 }}>Goal: {agent.goal}</div>
               </div>
             </div>
@@ -156,6 +161,42 @@ export default function AgentModal({ agentId, onClose }) {
                         </div>
                       ))
                     )}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.4rem', marginBottom: '0.8rem' }}>Health</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.6rem' }}>
+                    <div className="feature-card">
+                      <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>Condition</div>
+                      <div style={{ fontSize: '1rem', fontWeight: 700 }}>{agent.is_sick ? agent.disease_name || 'Unknown illness' : 'Stable'}</div>
+                    </div>
+                    <div className="feature-card">
+                      <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>Severity</div>
+                      <div style={{ fontSize: '1rem', fontWeight: 700, color: agent.is_sick ? 'var(--accent-red)' : 'var(--accent-green)' }}>
+                        {agent.is_sick ? Math.round(agent.illness_severity) : 0}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.4rem', marginBottom: '0.8rem' }}>Dimensional State</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.6rem' }}>
+                    {Object.entries(agent.dimensions || {}).slice(0, 8).map(([key, value]) => {
+                      const numericValues = Object.values(value).filter(v => typeof v === 'number');
+                      const headline = numericValues.length > 0 ? Math.round(numericValues[0]) : '...';
+                      return (
+                        <div key={key} style={{ padding: '0.65rem', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-subtle)' }}>
+                          <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                            {key}
+                          </div>
+                          <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                            {headline}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

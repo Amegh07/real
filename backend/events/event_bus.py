@@ -1,11 +1,5 @@
 """
-Event Bus
----------
-A simple publish-subscribe message queue for the simulation.
-Modules emit events; the bus collects and delivers them each tick.
-
-This is the communication backbone. In later phases, events will
-trigger Groq reasoning and dashboard notifications.
+Event Bus - Simple pub-sub for simulation events
 """
 
 from collections import deque
@@ -14,40 +8,39 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-MAX_EVENT_HISTORY = 200  # Keep last N events in memory
+MAX_EVENT_HISTORY = 200
 
 
 class EventBus:
-    """
-    Lightweight event queue.
-    Any part of the simulation can emit events; they are collected
-    and flushed at the end of each tick.
-    """
-
+    """Lightweight event queue for simulation."""
+    
     def __init__(self):
         self._pending: List[str] = []
         self._history: deque = deque(maxlen=MAX_EVENT_HISTORY)
-
+    
     def emit(self, message: str):
-        """Queue an event to be flushed at end of tick."""
+        """Queue an event."""
         self._pending.append(message)
         logger.debug(f"Event queued: {message}")
-
+    
     def flush(self, tick: int):
-        """
-        Move all pending events to history.
-        Called once per tick by the engine.
-        """
+        """Move pending events to history."""
         for msg in self._pending:
             stamped = f"[T{tick}] {msg}"
             self._history.append(stamped)
         self._pending.clear()
-
-    def get_recent_events(self, n: int = 10) -> List[str]:
-        """Return the N most recent events from history."""
+    
+    def get_recent(self, n: int = 10) -> List[str]:
+        """Get last n events."""
         history = list(self._history)
         return history[-n:]
-
+    
     def get_all_events(self) -> List[str]:
-        """Return full history as list."""
         return list(self._history)
+    
+    def emit_causal(self, **kwargs):
+        """Placeholder for causal events."""
+        pass
+    
+    def get_recent_causal(self, limit: int = 50) -> List[dict]:
+        return []

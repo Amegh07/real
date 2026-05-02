@@ -159,6 +159,7 @@ class Economy:
 
         # Treasury
         self.treasury: float = config.get("starting_treasury", 10_000.0)
+        self.current_tick: int = 0
 
         logger.info("Economy system initialized.")
 
@@ -225,12 +226,18 @@ class Economy:
         Pay an agent for working this tick.
         Phase 8: Wages are multiplied by the agent's skill level in that job.
         A brand-new worker gets base wage. An experienced worker gets up to 3x.
+        
+        Note: Agent must have a job BEFORE this is called. Job assignment happens
+        in assign_job() which should be called at start of tick, not here.
+        This method only handles payment, not job assignment.
         """
         if not agent.job:
-            self.assign_job(agent)
+            # No job - no wage. Agent should seek job via decision engine
+            agent.income_per_tick = 0.0
+            return 0.0
 
-        job_name = agent.job or "Laborer"
-        base_wage = JOB_REGISTRY.get(job_name, JOB_REGISTRY["Laborer"])["wage"]
+        job_name = agent.job
+        base_wage = JOB_REGISTRY.get(job_name, JOB_REGISTRY.get("Laborer", {"wage": 12.0}))["wage"]
 
         # Skill multiplier: skill starts at 0.0, each work tick grows it
         skill_level = agent.skills.get(job_name, 0.0)
@@ -246,6 +253,17 @@ class Economy:
             self.total_wages_paid += wage
             self.tick_wages += wage
             agent.income_per_tick = wage
+            self.event_bus.emit_causal(
+                tick=self.current_tick,
+                category="economy",
+                source=agent.job or "Laborer",
+                target=agent.name,
+                summary=f"{agent.name} earned wages as {job_name}.",
+                mechanism="Employment converts labor into treasury outflow and agent income.",
+                confidence=0.95,
+                reversibility="partial",
+                evidence=[f"wage={round(wage, 2)}", f"skill={round(skill_level, 2)}"],
+            )
             return round(wage, 2)
 
         # Treasury empty — pay partial
@@ -289,6 +307,18 @@ class Economy:
         if item.get("energy_boost"):
             agent.energy = min(100.0, agent.energy + item["energy_boost"])
 
+        self.event_bus.emit_causal(
+            tick=self.current_tick,
+            category="economy",
+            source=agent.name,
+            target=category,
+            summary=f"{agent.name} spent money on {category}.",
+            mechanism="Household consumption reduces liquidity and returns value to the treasury economy.",
+            confidence=0.9,
+            reversibility="reversible",
+            evidence=[f"cost={round(cost, 2)}"],
+        )
+
         return True
 
     def charge_food(self, agent) -> bool:
@@ -301,6 +331,7 @@ class Economy:
 
     def tick(self, tick_number: int, agents: list):
         """Called once per tick to update economic state."""
+        self.current_tick = tick_number
         # Reset per-tick counters
         self.tick_wages = 0.0
         self.tick_spending = 0.0

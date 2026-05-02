@@ -10,18 +10,34 @@ const SPEEDS = [
 
 export default function Controls({ isRunning, onToggle }) {
   const [activeSpeed, setActiveSpeed] = useState(1);
+  const [error, setError] = useState(null);
 
   const handlePause = async () => {
-    await pauseSimulation();
-    onToggle && onToggle();
+    try {
+      setError(null);
+      await pauseSimulation();
+      onToggle && onToggle();
+    } catch (err) {
+      setError('Failed to pause');
+    }
   };
   const handleResume = async () => {
-    await resumeSimulation();
-    onToggle && onToggle();
+    try {
+      setError(null);
+      await resumeSimulation();
+      onToggle && onToggle();
+    } catch (err) {
+      setError('Failed to resume');
+    }
   };
   const handleSpeed = async (tps) => {
-    setActiveSpeed(tps);
-    await setSpeed(tps);
+    try {
+      setError(null);
+      setActiveSpeed(tps);
+      await setSpeed(tps);
+    } catch (err) {
+      setError('Failed to set speed');
+    }
   };
 
   return (

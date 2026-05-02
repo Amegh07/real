@@ -76,7 +76,8 @@ class DecisionEngine:
 
         # --- Rule-based fallback ---
         scores = self._score_actions(agent, world_state)
-        return max(scores, key=lambda a: scores[a] + random.uniform(0, 1.5))
+        # Deterministic tie-breaking using agent id hash instead of random
+        return max(scores, key=lambda a: scores[a] + hash(f"{agent.id}_{a}") % 100 / 1000)
 
     # ─────────────────────────────────────────────────────────
     # Scoring
@@ -84,12 +85,16 @@ class DecisionEngine:
 
     def _score_actions(self, agent: Agent, world_state) -> Dict[str, float]:
         scores: Dict[str, float] = {action: 0.0 for action in ACTIONS}
-        eco = world_state.economy
+        eco = getattr(world_state, 'economy', None)
+        dims = getattr(agent, "dimension_state", {})
+        economic_pressure = dims.get("economic", {}).get("deprivation_risk", 0.0)
+        distress = dims.get("affective", {}).get("distress", 0.0)
+        social_support = dims.get("social", {}).get("social_support", 0.0)
 
         # ── EAT ──────────────────────────────────────────────
         hunger_need = 100.0 - agent.hunger
-        food_cost = world_state.food_cost
-        scores["eat"] = hunger_need * 0.75
+        food_cost = getattr(world_state, 'food_cost', 20) or 20
+        scores["eat"] = hunger_need * 0.75 + economic_pressure * 0.05
         if agent.money < food_cost:
             scores["eat"] *= 0.4       # Poor agent hesitates
 
@@ -100,13 +105,14 @@ class DecisionEngine:
         if eco and agent.job:
             from economy.economy import JOB_REGISTRY
             wage = JOB_REGISTRY.get(agent.job, {}).get("wage", 15.0)
-        scores["work"] = money_pressure + (wage * 0.3) - energy_penalty
+        scores["work"] = money_pressure + (wage * 0.3) - energy_penalty + economic_pressure * 0.25
 
         if agent.personality == "industrious":
             scores["work"] += 20
         elif agent.personality == "lazy":
             scores["work"] -= 20
-        if world_state.time_of_day in ("Night", "Dawn"):
+        time_of_day = getattr(world_state, 'time_of_day', "Day") or "Day"
+        if time_of_day in ("Night", "Dawn"):
             scores["work"] -= 20
 
         # ── SLEEP ────────────────────────────────────────────
@@ -114,14 +120,14 @@ class DecisionEngine:
         scores["sleep"] = energy_need * 0.65
         if agent.personality == "lazy":
             scores["sleep"] += 10
-        if world_state.time_of_day == "Night":
+        if time_of_day == "Night":
             scores["sleep"] += 30
-        if world_state.time_of_day in ("Morning", "Afternoon"):
+        if time_of_day in ("Morning", "Afternoon"):
             scores["sleep"] -= 15
 
         # ── SOCIALIZE ────────────────────────────────────────
         happiness_need = max(0, 70 - agent.happiness) * 0.6
-        scores["socialize"] = happiness_need
+        scores["socialize"] = happiness_need + max(0.0, 35.0 - social_support) * 0.35
         if agent.personality == "social":
             scores["socialize"] += 25
         elif agent.personality == "reclusive":
@@ -134,6 +140,8 @@ class DecisionEngine:
         # Married agents socialise less urgently (they're content)
         if agent.is_married:
             scores["socialize"] -= 5
+        if distress > 65:
+            scores["socialize"] -= 8
 
         # ── SEEK JOB ─────────────────────────────────────────
         if agent.job is None:
@@ -145,14 +153,14 @@ class DecisionEngine:
         is_wealthy = agent.money > 300
         is_happy_seeker = agent.happiness < 60
         if is_wealthy and is_happy_seeker:
-            scores["spend_luxury"] = 30 + (60 - agent.happiness) * 0.5
+            scores["spend_luxury"] = 30 + (60 - agent.happiness) * 0.5 + distress * 0.08
         elif agent.personality == "reckless" and agent.money > 100:
             scores["spend_luxury"] = 20
         else:
             scores["spend_luxury"] = 0
 
         # ── IDLE ─────────────────────────────────────────────
-        scores["idle"] = 4.0
+        scores["idle"] = 4.0 + max(0.0, distress - 70.0) * 0.12
 
         # ── VISIT DOCTOR ──────────────────────────────────────
         if getattr(agent, "is_sick", False):
@@ -188,8 +196,9 @@ class DecisionEngine:
         if agent.rival_count > 1 and random.random() < 0.01:
             return True
 
-        # Example condition 3: Starving but has no money 
-        if agent.hunger < 30 and agent.money < world_state.food_cost and random.random() < 0.02:
+        # Example condition 3: Starving but has no money
+        food_cost = getattr(world_state, 'food_cost', 50) or 50  # Default if missing
+        if agent.hunger < 30 and agent.money < food_cost and random.random() < 0.02:
             return True
 
         return False
@@ -209,7 +218,7 @@ Goal: {agent.goal}
 Memory:
 {agent.memory.build_context_string(n_recent=4, n_significant=3)}
 
-World: Time={world_state.time_of_day}, Weather={world_state.weather}, Food=${world_state.food_cost:.2f}
+World: Time={getattr(world_state, 'time_of_day', 'Day')}, Weather={getattr(world_state, 'weather', 'Clear')}, Food=${getattr(world_state, 'food_cost', 20):.2f}
 
 Valid Actions: {ACTIONS}
 Choose the ONE best action for this agent right now. Respond only in JSON:
@@ -217,18 +226,27 @@ Choose the ONE best action for this agent right now. Respond only in JSON:
   "reasoning": "brief 1-sentence why",
   "action": "exact_action_string"
 }}"""
-        response_text = self.groq_client.complete(prompt)
+        try:
+            response_text = self.groq_client.complete(prompt)
+        except (ValueError, Exception) as e:
+            logger.warning(f"Groq API call failed for {agent.name}: {e}")
+            return None
         
         try:
             data = json.loads(response_text)
             action = data.get("action")
             reason = data.get("reasoning")
             
+            # Validate action is in allowed list
+            if action not in ACTIONS:
+                logger.warning(f"AI returned invalid action '{action}' for {agent.name}")
+                return None
+            
             # Announce the AI decision to the event bus if it's interesting
             if action and reason:
                 logger.info(f"🧠 [AI] {agent.name} decided to '{action}': {reason}")
-                
+            
             return action
-        except json.JSONDecodeError:
-            raise ValueError(f"AI returned invalid JSON: {response_text}")
-
+        except (json.JSONDecodeError, TypeError, ValueError) as e:
+            logger.warning(f"AI returned invalid JSON for {agent.name}: {e}")
+            return None
