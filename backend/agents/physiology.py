@@ -20,12 +20,13 @@ from typing import Dict, List, Optional, Tuple
 from enum import Enum, auto
 from utils.logger import get_logger
 
-# Import neurology and cognition systems
-import sys
-import os
-sys.path.insert(0, os.path.dirname(__file__))
-from neurology import NeurologyModel
-from cognition import CognitionModel
+# Import neurology and cognition systems (in backend module)
+try:
+    from backend.neurology import NeurologyModel
+    from backend.cognition import CognitionModel
+except ImportError:
+    NeurologyModel = None
+    CognitionModel = None
 
 logger = get_logger(__name__)
 
@@ -277,20 +278,61 @@ class PhysiologyModel:
         # Initialize all organ systems
         for system in OrganSystem:
             self.organs[system] = OrganState(system=system)
-        # Initialize neurology and cognition systems
-        self.neurology = NeurologyModel()
-        self.cognition = CognitionModel()
+        # Initialize neurology and cognition systems if available
+        if NeurologyModel is not None:
+            self.neurology = NeurologyModel()
+        if CognitionModel is not None:
+            self.cognition = CognitionModel()
+        
+        # Performance budget tracking
+        self._tick_compute_time: float = 0.0
+        self._last_tick_duration: float = 0.0
+        self._skip_neurology: bool = False
+        self._skip_cognition: bool = False
     
-    def tick(self, activity: str, food_available: float, sleep_hours: float):
-        """Update physiology each simulation tick."""
-        self._update_metabolism(activity, food_available)
-        self._update_autonomic(activity)
-        self._update_hormones()
-        self._update_interoception()
-        self._update_sleep_architecture(sleep_hours)
-        self._update_age()
-        self._check_organ_system_damage()
-        self._update_neurology_and_cognition(activity, sleep_hours)
+    @property
+    def compute_budget_exceeded(self) -> bool:
+        """Check if last tick exceeded performance budget."""
+        return self._last_tick_duration > 5.0  # 5ms budget
+    
+    def _should_skip_expensive_updates(self) -> bool:
+        """Dynamic fidelity: skip cognition/neurology if behind."""
+        if self._last_tick_duration > 10.0:
+            return True
+        elif self._last_tick_duration > 5.0:
+            self._skip_neurology = True
+            self._skip_cognition = True
+            return True
+        return False
+    
+    def tick(self, tick: int, activity: str, food_available: float, sleep_hours: float):
+        """Update physiology each simulation tick with fail-safe and tiered updates."""
+        # TIER 1: Every tick (critical systems)
+        try:
+            self._update_metabolism(activity, food_available)
+            self._update_autonomic(activity)
+            self._update_interoception()
+            self._update_sleep_architecture(sleep_hours)
+            self._update_age()
+            self._check_organ_system_damage()
+            
+            # TIER 2: Every 5 ticks (hormones)
+            if tick % 5 == 0:
+                self._update_hormones(tick)
+            
+            # TIER 3: Every 10 ticks (cognition + neurology)
+            if tick % 10 == 0 and not self._should_skip_expensive_updates():
+                self._update_neurology_and_cognition(activity, sleep_hours)
+            elif tick % 10 != 0:
+                self._skip_neurology = True
+                self._skip_cognition = True
+
+            if not self.validate_state():
+                self._apply_fail_safe()
+                
+        except Exception as e:
+            logger.error(f"Tick failure for agent: {e}")
+            self._apply_fail_safe()
         self._check_failure_states()
     
     def validate_state(self) -> bool:
@@ -317,6 +359,32 @@ class PhysiologyModel:
             if not (0 <= organ.health <= 100):
                 return False
         return True
+    
+    def is_dead(self) -> bool:
+        """Check if agent has reached terminal state."""
+        return (
+            self.organs[OrganSystem.CARDIOVASCULAR].health <= 0 or
+            self.organs[OrganSystem.NERVOUS].health <= 0 or
+            self.blood_glucose < 20 or
+            self.energy_available <= 0
+        )
+    
+    def _apply_fail_safe(self):
+        """Reset to stable baseline on failure."""
+        self.blood_glucose = max(self.blood_glucose, 70)
+        self.blood_glucose = min(self.blood_glucose, 140)
+        
+        self.hormones.cortisol = max(0.2, min(0.8, self.hormones.cortisol))
+        self.hormones.dopamine = max(0.2, min(0.8, self.hormones.dopamine))
+        self.hormones.serotonin = max(0.2, min(0.8, self.hormones.serotonin))
+        self.hormones.adrenaline = max(0.1, min(0.9, self.hormones.adrenaline))
+        
+        self.energy_available = max(self.energy_available, 10)
+        self.adipose_tissue = max(self.adipose_tissue, 500)
+        self.glycogen_stores = max(self.glycogen_stores, 20)
+        
+        for organ in self.organs.values():
+            organ.health = max(10, min(90, organ.health))
     
     def _check_failure_states(self):
         """Check for catastrophic failure conditions."""
@@ -387,11 +455,12 @@ class PhysiologyModel:
             fat_burned = min(activity_cost * 0.01, self.adipose_tissue)
             self.adipose_tissue -= fat_burned
 
-        self.energy_available = (
-            self.glycogen_stores +
-            self.adipose_tissue * 0.001 +
-            self.blood_glucose * 0.1
-        )
+        # Calculate energy in consistent kcal units (GLUCOSE_KCAL_PER_MG_DL = 0.0035, GLYCOGEN_KCAL_PER_G = 4.0, FAT_KCAL_PER_UNIT = 1.0)
+        glucose_kcal = self.blood_glucose * 0.0035
+        glycogen_kcal = self.glycogen_stores * 4.0
+        fat_kcal = self.adipose_tissue * 1.0
+        
+        self.energy_available = glucose_kcal + glycogen_kcal + fat_kcal
 
         self.hunger_signal = max(0, min(1, (100 - self.blood_glucose) / 50))
         self.hormones.leptin = min(1.0, self.adipose_tissue / 5000)
@@ -419,12 +488,12 @@ class PhysiologyModel:
         else:
             self.pain_signal = 0.0
 
-    def _update_hormones(self):
+    def _update_hormones(self, tick: int):
         """Real hormone dynamics with circadian rhythms and feedback loops."""
         tick_fraction = 1 / 86400
         
         # Circadian cortisol rhythm (peak at morning, lowest at night)
-        hour = (self.tick % 1440) / 60  # Approximate hour within day
+        hour = (tick % 1440) / 60  # Approximate hour within day
         circadian_cortisol = 0.3 + 0.4 * math.sin((hour - 6) * math.pi / 12)
         self.hormones.cortisol = self.hormones.cortisol * 0.95 + circadian_cortisol * 0.05
         
@@ -453,7 +522,7 @@ class PhysiologyModel:
             self.hormones.serotonin = min(0.9, self.hormones.serotonin + self.social_interactions * 0.05)
         
         # Testosterone slowly cycles
-        self.hormones.testosterone = 0.5 + 0.1 * math.sin(self.tick / 10000)
+        self.hormones.testosterone = 0.5 + 0.1 * math.sin(tick / 10000)
         
         # Adrenaline decays naturally
         self.hormones.adrenaline = max(0.1, self.hormones.adrenaline - 0.05)

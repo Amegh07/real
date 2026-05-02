@@ -105,12 +105,24 @@ class WebSocketManager:
         logger.info(f"Client {client_id} disconnected.")
     
     async def send(self, client_id: str, message: WSMessage):
-        """Send message to specific client."""
+        """Send message to specific client with backpressure."""
         if client_id not in self.message_queues:
             return
         
+        queue = self.message_queues[client_id]
+        
+        # Backpressure: drop oldest message if queue full (non-blocking)
+        if queue.full():
+            try:
+                queue.get_nowait()
+            except asyncio.QueueEmpty:
+                pass
+        
+        # Non-blocking put
         try:
-            await self.message_queues[client_id].put(message)
+            queue.put_nowait(message)
+        except asyncio.QueueFull:
+            pass  # Already full, message dropped
         except Exception as e:
             logger.error(f"Send error: {e}")
     
@@ -220,7 +232,10 @@ class WebSocketManager:
                 message = await asyncio.wait_for(queue.get(), timeout=1.0)
 
                 await websocket.send(message.to_json())
-
+                
+            except asyncio.CancelledError:
+                logger.info(f"Queue processing cancelled for {client_id}")
+                break
             except asyncio.TimeoutError:
                 continue
             except Exception as e:
